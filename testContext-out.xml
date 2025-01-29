@@ -1,0 +1,4 @@
+<?xml version='1.0' ?>
+<org.eventb.core.contextFile>
+  <org.eventb.core.constant name="maxCount"/>
+</org.eventb.core.contextFile>
