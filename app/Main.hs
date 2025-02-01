@@ -3,11 +3,6 @@ import Text.XML.HaXml.Util
 import Data.Maybe 
 import Text.XML.HaXml.Types
 
-type Context = Context [contextInfo]
-data contextInfo
-   = Constant String
-   |Axiom String
-
 data Students = Students {enrolled :: [Student]} deriving Show
 data Student = Student {name :: String, gender :: String,age :: String, address :: Address} deriving Show
 data Address = Address {street :: String, number :: Int} deriving Show

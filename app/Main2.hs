@@ -3,15 +3,13 @@ import Text.XML.HaXml.Util
 import Data.Maybe 
 import Text.XML.HaXml.Types
 
-data Context = Context {info :: [ContextInfo] } deriving Show
+data ContextInfo = ContextInfo {info :: [(Constant, Invariant)]} deriving Show -- Le couple de constant invariant créer des problèmes de lecture de notre xml
+data Constant = Constant {name::String, identifier::String } deriving Show
+data Invariant = Invariant {namInv::String, label::String, predicate::String} deriving Show
 
-data ContextInfo = 
-    Constant String 
-    |Axiom String
-    deriving Show
 main :: IO ()
 main = do
-	stds <- fReadXml "testContext.xml"::IO Context
+	stds <- fReadXml "testContext.xml"::IO ContextInfo
 	print stds
         fWriteXml "testContext-out.xml" stds
 
@@ -22,27 +20,46 @@ attrToText n as = foldl1 (<|>) attrText
 mkAttrElemC :: String -> [Attribute] -> [Content ()] -> Content ()
 mkAttrElemC x as cs = CElem (Elem (N x) as cs) ()
 
-instance HTypeable Context where
-   toHType (Context ctx) = Defined "Context" [] [Constr "Context" [] [toHType ctx]]
+instance HTypeable Constant where
+   toHType (Constant n i) = Defined "Constant" [] [Constr "Constant" [] [toHType n, toHType i]]
+
+instance HTypeable Invariant where 
+    toHType i =
+        let Invariant n l p = i in Defined "Invariant" [] [Constr "Invariant" [] [toHType n, toHType l, toHType p]]  
 
 instance HTypeable ContextInfo where
-    toHType (Axiom s) = Defined "Axiom" [] [Constr "Axiom" [] [toHType s]]
-    toHType (Constant s) =  Defined "Constant" [] [Constr "Constant" [] [toHType s]]
+    toHType (ContextInfo i) = Defined "ContextInfo" [] [Constr "ContextInfo" [] [toHType i]]
 
-instance XmlContent ContextInfo where
+instance XmlContent Invariant where 
+    parseContents = do 
+	     e <- element ["org.eventb.core.invariant"]
+             interior e (Invariant <$> parseNameInv e <*> parseLabel e <*> parsePredicat e)
+        where 
+            parseNameInv n = return $ fromMaybe  "unknow" $ attrToText "name" $ attrs n
+            parseLabel l = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
+            parsePredicat p = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
+    
+    toContents v@(Invariant n l p) =
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "name" $ toText n, mkElemC "org.eventb.core.label" $ toText l, mkElemC "org.eventb.core.predicate" $ toText p] ]
+        --[mkAttrElemC (showConstr 0 $ toHType v) [mkAttr "name" n, mkAttr "org.eventb.core.label" l, mkAttr "org.eventb.core.predicate" p]]
+        
+
+instance XmlContent Constant where
     parseContents = do 
 	     e <- element ["org.eventb.core.constant"]
-             interior e (Constant <$> parseName e) 
+             interior e (Constant <$> parseName e <*> parseIdentifier e) 
 	    where 
-               parseName e = return $ fromMaybe "unknown" $ attrToText "org.eventb.core.identifier" $ attrs e
+               parseName n = return $ fromMaybe "unknown" $ attrToText "name" $ attrs n
+               parseIdentifier i = return $ fromMaybe "unknown" $ attrToText "org.eventb.core.identifier" $ attrs i
 
-    toContents v@(Constant ss) =
-        [mkAttrElemC "org.eventb.core.constant" [mkAttr "name" ss] []]
+    toContents v@(Constant ss i ) =
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "name" $ toText ss, mkElemC "org.eventb.identifier" $ toText i]]
         -- [mkAttrElemC (showConstr 0 $ toHType v) [mkAttr "gender" g, mkAttr "age" age]  ( mkElemC "name" (toText n) : toContents a)]
 
-instance XmlContent Context where
-    parseContents = inElement "org.eventb.core.contextFile" (Context <$> many parseContents)
+instance XmlContent ContextInfo where
+    parseContents = inElement "org.eventb.core.contextFile"(ContextInfo <$> parseContents)
+
          --parseContents = inElement "Students" (Students <$> parseContents)
     
-    toContents v@(Context ss) =
-       [mkElemC "org.eventb.core.contextFile" (concatMap toContents ss)]
+    toContents v@(ContextInfo i) =
+       [mkElemC (showConstr 0 $ toHType v) (concatMap toContents i) ]

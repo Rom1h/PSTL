@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <org.eventb.core.contextFile org.eventb.core.configuration="org.eventb.core.fwd" version="3">
     <org.eventb.core.constant name="'" org.eventb.core.identifier="maxCount"/>
+    <org.eventb.core.invariant name="+" org.eventb.core.label="count_bounded" org.eventb.core.predicate="count ≤ maxCount"/>
 </org.eventb.core.contextFile>

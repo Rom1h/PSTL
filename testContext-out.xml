@@ -1,4 +1,12 @@
 <?xml version='1.0' ?>
-<org.eventb.core.contextFile>
-  <org.eventb.core.constant name="maxCount"/>
-</org.eventb.core.contextFile>
+<ContextInfo>
+  <Constant>
+    <name>'</name>
+    <org.eventb.identifier>maxCount</org.eventb.identifier>
+  </Constant>
+  <Invariant>
+    <name>+</name>
+    <org.eventb.core.label>count_bounded</org.eventb.core.label>
+    <org.eventb.core.predicate>count ≤ maxCount</org.eventb.core.predicate>
+  </Invariant>
+</ContextInfo>
