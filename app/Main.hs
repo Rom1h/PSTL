@@ -4,7 +4,11 @@ import Context (ContextFile, Constant, Axiom)
 import Machine (MachineInfo, SeesContext, Variable, Invariant, Variant, Event, Garde, Action, Parameter)
 import Text.XML.HaXml.XmlContent
 
-
+--main :: IO ()
+--main = do
+  --  stds <- fReadXml "example.xml"::IO Students
+  --  let std = stds::Students in 
+  --      do print ( toStrings std )
     
 main :: IO ()
 main = do
