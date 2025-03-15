@@ -86,25 +86,8 @@ instance XmlContent SeesContext where
     toContents v@(SeesContext target) =
         [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.target" $ toText target] ]
 
-instance XmlContent Action where 
-    parseContents = do 
-        e <- element ["org.eventb.core.action"]
-        interior e (Action <$> parseAssignment e)
-        where  
-            parseAssignment as = return $ fromMaybe "unknow" $ attrToText "org.eventb.core.assignment" $ attrs as 
 
-    toContents v@(Action i) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ toText i] ]
 
-instance XmlContent Parameter where 
-    parseContents = do 
-        e <- element ["org.eventb.core.parameter"]
-        interior e (Parameter <$> parseIdentifier e)
-        where  
-            parseIdentifier i = return $ fromMaybe "unknow" $ attrToText "org.eventb.core.identifier" $ attrs i 
-
-    toContents v@(Parameter i) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.identifier" $ toText i] ]
 
 instance XmlContent Garde where 
     parseContents = do 
@@ -120,13 +103,12 @@ instance XmlContent Garde where
 instance XmlContent Action where 
     parseContents = do 
         e <- element ["org.eventb.core.action"]
-        Action <$> parseAssignment e <*> parseLabel e
+        Action <$> parseAssignment e
         where
             parseAssignment ass = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.assignment" $ attrs ass
-            parseLabel l = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
         
-    toContents v@(Action ass l) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ toText ass, mkElemC "org.eventb.core.label" $ toText l] ]
+    toContents v@(Action ass) = 
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ toText ass]]
 
 instance XmlContent Parameter where 
     parseContents = do 
@@ -217,6 +199,3 @@ parseAction = many parseContents
 
 parseParameter :: XMLParser [Parameter]
 parseParameter = many parseContents
-
-parseSeesContext :: XMLParser [SeesContext]
-parseSeesContext = many parseContents
