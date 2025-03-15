@@ -1,0 +1,14 @@
+<?xml version='1.0' ?>
+<MachineInfo>
+  <SeesContext>
+    <org.eventb.core.target>BoundedCtx</org.eventb.core.target>
+  </SeesContext>
+  <Invariant>
+    <org.eventb.core.label>count_type</org.eventb.core.label>
+    <org.eventb.core.predicate>count e N</org.eventb.core.predicate>
+  </Invariant>
+  <Invariant>
+    <org.eventb.core.label>count_bounded</org.eventb.core.label>
+    <org.eventb.core.predicate>count <= max_count</org.eventb.core.predicate>
+  </Invariant>
+</MachineInfo>

@@ -1,0 +1,8 @@
+<?xml version='1.0' ?>
+<ContextFile>
+  <Constant org.eventb.core.identifier="maxCount"/>
+  <Axiom org.eventb.core.label="maxCount_type"
+         org.eventb.core.predicate="maxCount ∈ ℕ"/>
+  <Axiom org.eventb.core.label="maxCount_prop"
+         org.eventb.core.predicate="maxCount > 0"/>
+</ContextFile>
