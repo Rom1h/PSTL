@@ -1,22 +1,25 @@
-module Context where
+module Context (
+    ContextFile(..),
+    Constant(..),
+    Axiom(..)
+) where
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
-
 import Text.XML.HaXml.XmlContent
 import Text.XML.HaXml.Util
 import Data.Maybe
 import Text.XML.HaXml.Types
-
+--Ajouter invariant pour nom de variable (type_var etcr)
 data ContextFile = ContextFile{
     constants :: [Constant],
     axioms :: [Axiom]
-} deriving Show
+}
 
-newtype Constant = Constant {identifierConst :: String} deriving Show
+newtype Constant = Constant {identifierConst :: String}
 
 data Axiom = Axiom {
     labelAx :: String,
     predicateAx :: String 
-    } deriving Show
+    }
 
 attrToText :: String -> [Attribute] -> Maybe String
 attrToText n as = foldl1 (<|>) attrText
@@ -34,6 +37,7 @@ instance HTypeable Axiom where
 
 instance HTypeable ContextFile where
     toHType (ContextFile cs axs) = Defined "ContextFile" [] [Constr "ContextFile" [] [toHType cs, toHType axs]]
+
 
 instance XmlContent ContextFile where 
     parseContents = inElement "org.eventb.core.contextFile" (ContextFile <$> parseConstant <*> parseAxiom)
@@ -67,3 +71,4 @@ parseConstant = many parseContents
 
 parseAxiom :: XMLParser [Axiom]
 parseAxiom = many parseContents
+
