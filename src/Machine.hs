@@ -13,16 +13,17 @@ data MachineInfo = MachineInfo {
     variables ::[Variable],
     invariants :: [Invariant],
     variants::[Variant],
-    events::[Event]} deriving Show
+    events::[Event]
+    } 
 
 newtype SeesContext = SeesContext
     {target::String}
-    deriving Show
-data Variable = Variable {name::String} deriving Show
-data Invariant = Invariant {labelInv::String,predicateInv::String} deriving Show
-data Variant = Variant {labelVar :: String , expr :: String} deriving Show
-data Event = Event {convergent :: Bool,labelEvent :: String,parameter :: [Parameter],gards ::[Garde],action:: [Action]} deriving Show
-data Garde = Garde {labelGarde :: String ,predicateGarde :: String} deriving Show
+
+data Variable = Variable {name::String} 
+data Invariant = Invariant {labelInv::String,predicateInv::String} 
+data Variant = Variant {labelVar :: String , expr :: String} 
+data Event = Event {convergent :: Bool,labelEvent :: String,parameter :: [Parameter],gards ::[Garde],action:: [Action]} 
+data Garde = Garde {labelGarde :: String ,predicateGarde :: String} deriving (Show)
 
 newtype Parameter = Parameter 
     {identificateur :: String}

@@ -1,0 +1,73 @@
+module MachineToLean where
+
+import Machine (MachineInfo(..), SeesContext(..), Variable(..), Invariant(..), Variant(..), Event(..), Garde(..), Action(..), Parameter(..))
+
+showTypage::Variable -> [Invariant] -> ([Invariant],String)
+showTypage (Variable name) ((Invariant l p):invs) 
+    | (l == (name<>"_type")) && (p == (name <> " \212\234\234 \212\228\242")) = (invs, name<>" : Nat")
+    | otherwise = showTypage (Variable name) invs
+
+showDefault::[Variable] -> String
+showDefault [(Variable name)] = name <>" := default"
+showDefault ((Variable name):vs) = name <>" := default\n\t" <> showDefault vs
+
+--instance Show MachineInfo where 
+  --  show (MachineInfo init sC [variable] invs variants e)= "structure Bounded /-SEES-/ (ctx:"<>show sC <>") where" <> (showTypage variable inv) <> show sC <> show variable <> show init <> show e 
+
+instance Show MachineInfo where 
+    show (MachineInfo inits [(SeesContext t)] variable invs _ e)=
+        let init = head inits in
+        let inter = head variable in 
+        let (invs2, res) = (showTypage inter invs) in
+            "structure Bounded /-SEES-/ (ctx:"<> t <>") where\n\t" <> res <> "\n\nnamespace Bounded\n\n@[simp]\n" <> showListe invs2 <> "\n@[simp]\n def Default : Bounded ctx := \n\t{" <> showDefault variable <>" }"<>"\n\ninstance: Machine " <> t <>" (Bounded ctx) where\n\tcontext := ctx\n\tinvariant m := " <> showListePredicat (showInvNamePredicat invs2)<>"\n\tdefault := Default" <> "\n\n def " <> showEventLabel init <> ": InitEvent (Bounded ctx) Unit Unit := \n\tnewInitEvent'' {\n\t\t init _ := { "<> showEventAction init <> " }\n\t\t safety _ := by sorry \n\t}\n\ndef \n\n" <> show e
+
+instance Show SeesContext where 
+    show (SeesContext t) = show t
+
+showGarde :: ([Garde],String) -> String
+showGarde ([(Garde l p)], s) = "def " <>s<>".guard_"<> l <>" (m : Bounded ctx) : Prop := \n\t m."<> showPredicate p <> "\n\n"
+showGarde (((Garde l p):gs), s) =  "def " <>s<>".guard_"<> l <>" (m : Bounded ctx) : Prop := \n\t m."<> showPredicate p <> "\n\n"<> showGarde (gs, s)
+
+showGardeEvent :: [Garde] -> String -> String -- Trouver un meilleur nom si possible
+showGardeEvent [(Garde l _)] s = s<>".guard_"<>l<>" m"
+showGardeEvent ((Garde l _):gs) s = s<>".guard_"<>l<>" m^"<> showGardeEvent gs s
+
+showActionEvent :: [Action] -> String -> String -- Trouver un meilleur nom si possible
+showActionEvent [(Action l)] s = s<>".action_"<>l<>" m"
+showActionEvent ((Action l):as) s = s<>".action_"<>l<>" m^"<> showActionEvent as s
+
+
+instance Show Event where 
+    show (Event c l p g a) = showGarde (g, l) <> showAction (a,l) <> "def "<>l<>" : OrdinaryEvent (Bounded ctx) Unit Unit := \n\t newEvent'' {\n\t\t"<> "guard m :="<> showGardeEvent g l<>"\n\t\taction m _ := "<> showActionEvent a l <> "\n\t\tsafety m := by sorry\n}"
+
+showAction :: ([Action], String) -> String
+showAction ([(Action a)], s) = "def "<>s<>".action (m : Bounded ctx) : Bounded ctx := \n\t { "<>a <>" }\n\n"
+showAction (((Action a):as), s) = "def "<>s<>".action (m : Bounded ctx) : Bounded ctx := \n\t { "<>a <>" }\n\n" <> showAction (as, s)
+
+showEventLabel:: Event -> String 
+showEventLabel (Event _ l _ _ _) = l
+
+showEventAction:: Event -> String 
+showEventAction (Event _ _ _ _ ((Action a):as)) = a 
+
+showPredicate:: String -> String
+showPredicate [s] = [s]
+showPredicate (s:ss)
+    | (s == '<') = " < ctx." <> showPredicate (ss)
+    | (s == '\212') = " \212\235\241 ctx." <> showPredicate (ss)
+    | otherwise = [s] <> (showPredicate ss)
+
+showListe ::(Show a) => [a] -> String
+showListe [i] = show i
+showListe (i:is) = show i <> show is
+
+showListePredicat :: [String] -> String
+showListePredicat [s] = "("<>s<>")"
+showListePredicat (s:ss) = ("("<>s<>") ^ ") <> showListePredicat ss
+
+showInvNamePredicat :: [Invariant] -> [String]
+showInvNamePredicat [(Invariant l p)] = [p]
+showInvNamePredicat ((Invariant l p):invs) = [("inv_"<>p)] <> showInvNamePredicat invs
+
+instance Show Invariant where 
+    show (Invariant l p) = "def inv_"<> l <> "(m : BoundedCtx) : Prop :=\n\tm."<> showPredicate p <>"\n"
