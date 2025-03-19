@@ -1,4 +1,4 @@
-module Machine where
+module RodinAst.Machine where
 
 {-# OPTIONS_GHC -Wno-name-shadowing #-}
 

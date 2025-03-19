@@ -1,8 +1,10 @@
-module MachineToLean where
+module LeanMachineAst.MachineToLean where
 
-import Machine (MachineInfo(..), SeesContext(..), Variable(..), Invariant(..), Variant(..), Event(..), Garde(..), Action(..), Parameter(..))
+import RodinAst.Machine (MachineInfo(..), SeesContext(..), Variable(..), Invariant(..), Variant(..), Event(..), Garde(..), Action(..), Parameter(..))
 
 showTypage::Variable -> [Invariant] -> ([Invariant],String)
+showTypage (Variable name) [] = ([], name<>" : Nat")
+
 showTypage (Variable name) ((Invariant l p):invs) 
     | (l == (name<>"_type")) && (p == (name <> " \212\234\234 \212\228\242")) = (invs, name<>" : Nat")
     | otherwise = showTypage (Variable name) invs
@@ -12,7 +14,7 @@ showDefault [(Variable name)] = name <>" := default"
 showDefault ((Variable name):vs) = name <>" := default\n\t" <> showDefault vs
 
 --instance Show MachineInfo where 
-  --  show (MachineInfo init sC [variable] invs variants e)= "structure Bounded /-SEES-/ (ctx:"<>show sC <>") where" <> (showTypage variable inv) <> show sC <> show variable <> show init <> show e 
+    --  show (MachineInfo init sC [variable] invs variants e)= "structure Bounded /-SEES-/ (ctx:"<>show sC <>") where" <> (showTypage variable inv) <> show sC <> show variable <> show init <> show e 
 
 instance Show MachineInfo where 
     show (MachineInfo inits [(SeesContext t)] variable invs _ e)=
@@ -58,14 +60,17 @@ showPredicate (s:ss)
     | otherwise = [s] <> (showPredicate ss)
 
 showListe ::(Show a) => [a] -> String
+showListe [] = ""
 showListe [i] = show i
 showListe (i:is) = show i <> show is
 
 showListePredicat :: [String] -> String
+showListePredicat [] = ""
 showListePredicat [s] = "("<>s<>")"
 showListePredicat (s:ss) = ("("<>s<>") ^ ") <> showListePredicat ss
 
 showInvNamePredicat :: [Invariant] -> [String]
+showInvNamePredicat [] = []
 showInvNamePredicat [(Invariant l p)] = [p]
 showInvNamePredicat ((Invariant l p):invs) = [("inv_"<>p)] <> showInvNamePredicat invs
 

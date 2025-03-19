@@ -1,6 +1,6 @@
-module ContextToLean where
+module LeanMachineAst.ContextToLean where
 
-import Context (ContextFile(..), Constant(..), Axiom(..))
+import RodinAst.Context (ContextFile(..), Constant(..), Axiom(..))
 
 
 

@@ -1,4 +1,4 @@
-module Context (
+module RodinAst.Context (
     ContextFile(..),
     Constant(..),
     Axiom(..)

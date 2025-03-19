@@ -25,8 +25,13 @@ source-repository head
 
 library
   exposed-modules:
-      Context
-      Machine
+      LeanMachineAst.ContextLeanAst
+      LeanMachineAst.ContextLeanProgram
+      LeanMachineAst.ContextToLean
+      LeanMachineAst.DataExpr
+      LeanMachineAst.MachineToLean
+      RodinAst.Context
+      RodinAst.Machine
   other-modules:
       Paths_PSTL
   autogen-modules:
@@ -37,6 +42,7 @@ library
   build-depends:
       HaXml >=1.25
     , base >=4.7 && <5
+    , text
   default-language: Haskell2010
 
 executable PSTL-exe
@@ -52,6 +58,7 @@ executable PSTL-exe
       HaXml >=1.25
     , PSTL
     , base >=4.7 && <5
+    , text
   default-language: Haskell2010
 
 test-suite PSTL-test
@@ -68,4 +75,5 @@ test-suite PSTL-test
       HaXml >=1.25
     , PSTL
     , base >=4.7 && <5
+    , text
   default-language: Haskell2010
