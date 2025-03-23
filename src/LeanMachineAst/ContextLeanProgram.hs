@@ -24,5 +24,5 @@ parseConstant consList =
 parseAxiom :: [CLA.AxiomL] -> Text
 parseAxiom axiomList = 
     foldr (\(CLA.AxiomL n e) acc -> 
-        pack "prop_" <> n <> pack " : " <> exprToText e <> pack "\n" <> acc
+        pack "" <> n <> pack " : " <> exprToText e <> pack "\n" <> acc
     ) (pack "") axiomList

@@ -1,2 +1,10 @@
+import DataExprSpec as DES
+
+
+import Test.Hspec
+
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = hspec $ do
+  -- revrev
+  DES.dataExprTest
