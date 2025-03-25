@@ -11,15 +11,40 @@ showDefault::[Variable] -> String
 showDefault [(Variable name)] = name <>" := default"
 showDefault ((Variable name):vs) = name <>" := default\n\t" <> showDefault vs
 
+zipTypage:: [Invariant] -> String -> ([Invariant], String)
+zipTypage inv s = (inv, s)
+
+showTypageTotal::[Invariant] -> [Variable] -> ([Invariant],[String]) -> ([Invariant], [String])
+showTypageTotal inv [] (invb, sb) = ([], [])
+showTypageTotal inv (v:vs) (invb, sb) = 
+    let (invr, sr) = showTypage v inv in 
+        (invr, [sr]<>sb)
+
 --instance Show MachineInfo where 
   --  show (MachineInfo init sC [variable] invs variants e)= "structure Bounded /-SEES-/ (ctx:"<>show sC <>") where" <> (showTypage variable inv) <> show sC <> show variable <> show init <> show e 
 
 instance Show MachineInfo where 
     show (MachineInfo inits [(SeesContext t)] variable invs _ e)=
         let init = head inits in
-        let inter = head variable in 
-        let (invs2, res) = (showTypage inter invs) in
-            "structure Bounded /-SEES-/ (ctx:"<> t <>") where\n\t" <> res <> "\n\nnamespace Bounded\n\n@[simp]\n" <> showListe invs2 <> "\n@[simp]\n def Default : Bounded ctx := \n\t{" <> showDefault variable <>" }"<>"\n\ninstance: Machine " <> t <>" (Bounded ctx) where\n\tcontext := ctx\n\tinvariant m := " <> showListePredicat (showInvNamePredicat invs2)<>"\n\tdefault := Default" <> "\n\n def " <> showEventLabel init <> ": InitEvent (Bounded ctx) Unit Unit := \n\tnewInitEvent'' {\n\t\t init _ := { "<> showEventAction init <> " }\n\t\t safety _ := by sorry \n\t}\n\ndef \n\n" <> show e
+        let (invs2, res) = (showTypageTotal invs variable ([],[])) in
+            "structure Bounded /-SEES-/ (ctx:"<> t <>") where\n"<>
+            "\t" <> showListeString res <> "\n"<>
+            "\nnamespace Bounded\n"<>
+            "\n@[simp]\n" <> 
+            showListe invs2 <> "\n"<>
+            "@[simp]\n"<>
+            "def Default : Bounded ctx := \n"<>
+            "\t{" <> showDefault variable <>" }"<>"\n"<>
+            "\ninstance: Machine " <> t <>" (Bounded ctx) where\n"<>
+            "\tcontext := ctx\n"<>
+            "\tinvariant m := " <> showListePredicat (showInvNamePredicat invs2)<>"\n"<>
+            "\tdefault := Default" <> "\n"<>
+            "\n def " <> showEventLabel init <> ": InitEvent (Bounded ctx) Unit Unit := \n"<>
+            "\tnewInitEvent'' {\n"<>
+            "\t\t init _ := { "<> showEventAction init <> " }\n"<>
+            "\t\t safety _ := by sorry \n"<>
+            "\t}\n"<>
+            "\n" <> showListe e
 
 instance Show SeesContext where 
     show (SeesContext t) = show t
@@ -59,7 +84,11 @@ showPredicate (s:ss)
 
 showListe ::(Show a) => [a] -> String
 showListe [i] = show i
-showListe (i:is) = show i <> show is
+showListe (i:is) = show i <>"\n\n"<> showListe is
+
+showListeString ::[String] -> String
+showListeString [i] = i
+showListeString (i:is) = i <> showListeString is
 
 showListePredicat :: [String] -> String
 showListePredicat [s] = "("<>s<>")"
