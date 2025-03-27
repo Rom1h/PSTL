@@ -17,20 +17,20 @@ data MachineInfo = MachineInfo {
     } 
 
 newtype SeesContext = SeesContext
-    {target::String}
+    {target::Text}
 
-data Variable = Variable {name::String} 
-data Invariant = Invariant {labelInv::String,predicateInv::String} 
-data Variant = Variant {labelVar :: String , expr :: String} 
-data Event = Event {convergent :: Bool,labelEvent :: String,parameter :: [Parameter],gards ::[Garde],action:: [Action]} 
-data Garde = Garde {labelGarde :: String ,predicateGarde :: String} deriving (Show)
+data Variable = Variable {name::Text} 
+data Invariant = Invariant {labelInv::Text,predicateInv::Text} 
+data Variant = Variant {labelVar :: Text , expr :: Text} 
+data Event = Event {convergent :: Bool,labelEvent :: Text,parameter :: [Parameter],gards ::[Garde],action:: [Action]} 
+data Garde = Garde {labelGarde :: Text ,predicateGarde :: Text} deriving (Show)
 
 newtype Parameter = Parameter 
-    {identificateur :: String}
+    {identificateur :: Text}
     deriving Show
 
 data Action = Action 
-    {assign :: String}
+    {assign :: Text}
     deriving Show
 
 attrToText :: String -> [Attribute] -> Maybe String
@@ -41,34 +41,34 @@ mkAttrElemC :: String -> [Attribute] -> [Content ()] -> Content ()
 mkAttrElemC x as cs = CElem (Elem (N x) as cs) ()
 
 instance HTypeable Parameter where 
-    toHType (Parameter i) = Defined "Parameter" [] [Constr "Parameter" [] [toHType i]]
+    toHType (Parameter i) = Defined "Parameter" [] [Constr "Parameter" [] [toHType (unpack i)]]
 
 instance HTypeable Action where 
-    toHType (Action assign) = Defined "Action" [] [Constr "Action" [] [toHType assign]]
+    toHType (Action assign) = Defined "Action" [] [Constr "Action" [] [toHType (unpack assign)]]
 
 instance HTypeable Garde where
     toHType i =
-        let (Garde l p) = i in Defined "Garde" [] [Constr "Garde" [] [toHType l, toHType p]]
+        let (Garde l p) = i in Defined "Garde" [] [Constr "Garde" [] [toHType (unpack l), toHType (unpack p)]]
 
 instance HTypeable SeesContext where
     toHType i =
-        let (SeesContext target) = i in Defined "SeesContext" [] [Constr "SeesContext" [] [toHType target]]
+        let (SeesContext target) = i in Defined "SeesContext" [] [Constr "SeesContext" [] [toHType (unpack target)]]
 
 instance HTypeable Event where
     toHType i =
-        let (Event c l p g a) = i in Defined "Event" [] [Constr "Event" [] [toHType c,toHType l,toHType p,toHType a, toHType g]]
+        let (Event c l p g a) = i in Defined "Event" [] [Constr "Event" [] [toHType c,toHType (unpack l),toHType p,toHType g, toHType a]]
 
 instance HTypeable Invariant where
     toHType i =
-        let  (Invariant l p) = i in Defined "Invariant" [] [Constr "Invariant" [] [toHType l, toHType p]]  
+        let  (Invariant l p) = i in Defined "Invariant" [] [Constr "Invariant" [] [toHType (unpack l), toHType (unpack p)]]  
 
 instance HTypeable Variant where
     toHType i = 
-        let (Variant l e) = i in Defined "Variant" [] [Constr "Variant" [] [toHType l,toHType e]]
+        let (Variant l e) = i in Defined "Variant" [] [Constr "Variant" [] [toHType (unpack l),toHType (unpack e)]]
 
 instance HTypeable Variable where
     toHType i =
-        let  (Variable s) = i in Defined "Variable" [] [Constr "Variable" [] [toHType s]]
+        let  (Variable s) = i in Defined "Variable" [] [Constr "Variable" [] [toHType (unpack s)]]
 
 instance HTypeable MachineInfo where
     toHType (MachineInfo init sees var inv vn ev) = Defined "MachineInfo" [] [Constr "MachineInfo" [] [toHType init,toHType sees,toHType var,toHType inv, toHType vn, toHType ev]]
@@ -78,40 +78,40 @@ instance XmlContent SeesContext where
         e <- element ["org.eventb.core.seesContext"]
         SeesContext <$> parseTarget e
         where
-            parseTarget target = return $ fromMaybe "unknow" $ attrToText "org.eventb.core.target" $ attrs target
+            parseTarget target = return $ pack $ fromMaybe "unknow" $ attrToText "org.eventb.core.target" $ attrs target
 
     toContents v@(SeesContext target) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.target" $ toText target] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.target" $ target] ]
 
 instance XmlContent Garde where 
     parseContents = do 
         e <- element ["org.eventb.core.guard"]
         Garde <$> parseLabel e <*> parsePredicat e
         where
-            parseLabel l = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
-            parsePredicat p = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
+            parseLabel l = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
+            parsePredicat p = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
 
     toContents v@(Garde l p) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ toText l, mkElemC "org.eventb.core.predicate" $ toText p] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ l, mkElemC "org.eventb.core.predicate" $ p] ]
 
 instance XmlContent Action where 
     parseContents = do 
         e <- element ["org.eventb.core.action"]
         Action <$> parseAssignment e 
         where
-            parseAssignment ass = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.assignment" $ attrs ass
+            parseAssignment ass = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.assignment" $ attrs ass
         
     toContents v@(Action ass) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ toText ass] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ ass] ]
 
 instance XmlContent Parameter where 
     parseContents = do 
         e <- element ["org.eventb.core.parameter"]
         interior e (Parameter <$> parseIdentifier e)
         where  
-            parseIdentifier i = return $ fromMaybe "unknow" $ attrToText "org.eventb.core.identifier" $ attrs i 
+            parseIdentifier i = return $ pack $ fromMaybe "unknow" $ attrToText "org.eventb.core.identifier" $ attrs i 
     toContents v@(Parameter i) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.identifier" $ toText i] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.identifier" $ i] ]
 
 instance XmlContent Event where
     parseContents = do
@@ -122,35 +122,32 @@ instance XmlContent Event where
                 case attrToText "org.eventb.core.convergence" $ attrs e of
                     Just "1" -> True
                     _ -> False
-            parseLabel l = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
+            parseLabel l = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
 
     toContents v@(Event c l p n a)=
-        [mkElemC (showConstr 0 $ toHType v) ([mkElemC "org.eventb.core.convergence" $ toText $ show c, mkElemC "org.eventb.core.label" $ toText l ] ++ (concatMap toContents p)++ (concatMap toContents n) ++ (concatMap toContents a))  ]
-
-    toContents v@(Event c l p n a)=
-        [mkElemC (showConstr 0 $ toHType v) ([mkElemC "org.eventb.core.convergence" $ toText $ show c, mkElemC "org.eventb.core.label" $ toText l ] <>  toContents p <> toContents n <> toContents a)  ]
+        [mkElemC (showConstr 0 $ toHType v) ([mkElemC "org.eventb.core.convergence" $ toText $ show c, mkElemC "org.eventb.core.label" $ l ] ++ (concatMap toContents p)++ (concatMap toContents n) ++ (concatMap toContents a))  ]
 
 instance XmlContent Variant where
     parseContents = do
         e <- element ["org.eventb.core.variant"]
         Variant <$> parseLabel e <*> parsePredicat e
         where
-            parseLabel l = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
-            parsePredicat p = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
+            parseLabel l = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
+            parsePredicat p = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
 
     toContents v@(Variant l p) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ toText l, mkElemC "org.eventb.core.predicate" $ toText p] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ l, mkElemC "org.eventb.core.predicate" $ p] ]
 
 instance XmlContent Invariant where
     parseContents = do
         e <- element ["org.eventb.core.invariant"]
         Invariant <$>  parseLabel e <*> parsePredicat e
         where
-            parseLabel l = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
-            parsePredicat p = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
+            parseLabel l = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
+            parsePredicat p = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
 
     toContents v@(Invariant l p) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ toText l, mkElemC "org.eventb.core.predicate" $ toText p] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ l, mkElemC "org.eventb.core.predicate" $ p] ]
         --[mkAttrElemC (showConstr 0 $ toHType v) [mkAttr "name" n, mkAttr "org.eventb.core.label" l, mkAttr "org.eventb.core.predicate" p]]
 
 instance XmlContent Variable where
@@ -158,10 +155,10 @@ instance XmlContent Variable where
         e<- element ["org.eventb.core.variable"]
         Variable <$> parseName e
         where
-            parseName e = return $ fromMaybe  "unknow" $ attrToText "org.eventb.core.identifier" $ attrs e
+            parseName e = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.identifier" $ attrs e
 
     toContents v@(Variable n) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "name" $ toText n] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "name" $ n] ]
 
 instance XmlContent MachineInfo where
     
