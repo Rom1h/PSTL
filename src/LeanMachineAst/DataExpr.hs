@@ -25,13 +25,13 @@ data Expr
 
 data CType = Nat
             |None deriving (Show,Eq)
-{-
-XmlSymbolToOp :: T.Text -> T.Text
-XmlSymbolToOp =
-    T.replace "&gt;" ">". T.replace "&lt;" "<" . T.replace "&#10;" " "
 
-replaceSymbol :: Text -> Text
-replaceSymbol = M.foldrWithKey T.replace-}
+xmlSymbolToOp :: Text -> Text
+xmlSymbolToOp =
+    T.replace "&gt;" ">" .
+    T.replace "&lt;" "<" .
+    T.replace "&#10;" " "
+
 
 tokenize :: Text -> [Text]
 tokenize txt
@@ -48,7 +48,7 @@ tokenize txt
 
 
 textToExpr :: Text -> Expr
-textToExpr = fst . parseImplic . tokenize
+textToExpr = fst . parseImplic . tokenize. xmlSymbolToOp
 
 
 

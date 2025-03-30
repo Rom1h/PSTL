@@ -1,6 +1,6 @@
 module LeanMachineAst.ContextLeanAst where
 import LeanMachineAst.DataExpr
-import RodinAst.Context (ContextFile(..), Constant(..), Axiom(..))
+import RodinAst.ContextRodinAst (ContextFile(..), Constant(..), Axiom(..))
 import qualified Data.Text as T
 import Data.Text (Text)
 
