@@ -13,6 +13,7 @@ import qualified Data.Map as Map
 
 
 import LeanMachineAst.ContextLeanAst
+import LeanMachineAst.MachineLeanAst
 import LeanMachineAst.ContextLeanProgram
 import Text.XML.HaXml.Types (Content(..), Element(..), QName(..), Attribute,AttValue(..))
 
@@ -33,7 +34,7 @@ main = do
 
     stds <- fReadXml "./xmlFile/Machine/fichierNormal.xml"::IO MachineInfo
     let std = stds::MachineInfo in
-        do writeFile "./leanFile/Context/machine.lean" (show std)
+        do writeFile "./leanFile/Machine/machine.lean" (show (generateMachineAst std))
 
     fWriteXml "./xmlFile/Machine/testMachine-out.xml" stds
     stds2 <- fReadXml "./xmlFile/Context/testContextPredicat.xml"::IO ContextFile

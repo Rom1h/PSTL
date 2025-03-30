@@ -7,84 +7,98 @@ import Data.Text (Text)
 
 data MachineAst = MachineAst{
     machineName::Text, 
+    machineInit::InitialisationAst,
     machineContext::MachineContAst,
-    variabless::[VariableAst], 
+    variables::[VariableAst], 
     invariants::[InvariantAst],
-    machineInit::InitialisationAst
-    events::[EventAst],
-    }
+    variant:: [VariantAst],
+    events::[EventAst]
+    } deriving (Show)
 
 data MachineContAst = MachineContAst{
     contName::Text,
     contType::Text
-}
+}deriving (Show)
+
+data VariantAst = VariantAst{
+    variantName::Text,
+    variantExpr::Expr
+}deriving (Show)
 
 data VariableAst = VariableAst{
     variableName::Text,
     variableType::CType
-}
+}deriving (Show)
 
 data InvariantAst = InvariantAst{
     invariantName::Text,
     invariantProp::Expr
-}
+}deriving (Show)
 
 data InitialisationAst = InitAst{
     initialisationName::Text,
     initialisationInit::Expr
-}
+}deriving (Show)
 
 data EventAst = EventAst{
-    eventGuard = [GuardeAst],
-    eventAction = [ActionAst]
-}
+    eventGard :: [GardeAst],
+    eventAction :: [ActionAst]
+}deriving (Show)
 
-data GuardeAst = GuardeAst{
+data GardeAst = GardeAst{
     guardeName::Text,
     guardeProp:: Expr
-}
+}deriving (Show)
 
 data ActionAst = ActionAst{
-    actionExpr:: Expr,
-}
+    actionExpr:: Expr
+}deriving (Show)
 
 generateMachineAst:: MachineInfo -> MachineAst
 generateMachineAst (MachineInfo is scs vars invs varis events) = 
-    let (invTypes, invs) = getTypeInv invs in 
-        MachineAst (generateInitialisationAst is) (generateMachineConstAst scs) (generateVariableAst vars invTypes) (generateInvariantAst invs) (generateVariantAst varis) (generateEventAst events)
+    let (res1, res2) = getTypeInv invs in 
+        MachineAst (T.pack "Bounded") (generateInitialisationAst is) (generateMachineConstAst scs) (generateVariableAst vars res1) (generateInvariantAst res2) (generateVariantAst varis) (generateEventAst events)
 
 generateInitialisationAst::[Event] -> InitialisationAst
-generateInvariantAst [(Event c l p g (Action ass))] = InitialisationAst (T.pack "Initialisation") ass
+generateInitialisationAst ((Event c l p g ((Action ass):as)):es) = InitAst (T.pack "Initialisation") (textToExpr ass)
+
+generateVariantAst:: [Variant] -> [VariantAst]
+generateVariantAst [] = []
+generateVariantAst ((Variant l expr):vs) = VariantAst l (textToExpr expr):(generateVariantAst vs)
 
 generateMachineConstAst::[SeesContext] -> MachineContAst
 generateMachineConstAst [(SeesContext t)] = MachineContAst (T.pack "ctx") (t)
 
 generateVariableAst::[Variable] -> [Invariant] -> [VariableAst] 
-generateVariableAst vars invs = foldr (\(Variable n) acc -> (VariableAst n (getType n invs))) [] vars
+generateVariableAst vars invs = foldr (\(Variable n) acc -> ((VariableAst n (getType n invs)):acc)) [] vars
 
 generateInvariantAst::[Invariant] -> [InvariantAst]
+generateInvariantAst [] = []
 generateInvariantAst ((Invariant l p):invs) = (InvariantAst l (textToExpr p)):(generateInvariantAst invs)
 
 generateEventAst::[Event] -> [EventAst]
-generateEventAst ((Event _ _ _ g a):evs) = ((EventAst (generateGuardeAst g) (generateActionAst a)):(generateEventAst evs))
+generateEventAst [] = []
+generateEventAst ((Event _ _ _ g a):evs) = ((EventAst (generateGardeAst g) (generateActionAst a)):(generateEventAst evs))
 
-generateGuardeAst::[Guarde] -> [GuardeAst]
-generateGuardeAst ((Guarde l p):gs) = ((GuardeAst l (textToExpr p)):(generateGuardeAst gs))
+generateGardeAst::[Garde] -> [GardeAst]
+generateGardeAst [] = []
+generateGardeAst ((Garde l p):gs) = ((GardeAst l (textToExpr p)):(generateGardeAst gs))
 
 
 generateActionAst::[Action] -> [ActionAst]
+generateActionAst [] = []
 generateActionAst ((Action ass):gs) = ((ActionAst (textToExpr ass)):(generateActionAst gs))
 
 getType::Text -> [Invariant] -> CType
 getType varName ((Invariant l p):invs) 
-    | (varName != T.empty) && (T.isInfixOf varName l) = textToExpr (Prelude.last (T.splitOn (T.pack "∈" p)))
+    | (varName /= T.empty) && (T.isInfixOf varName l) = textToType (Prelude.last (T.splitOn (T.pack "∈") p))
     | otherwise = (getType varName invs)
 
 isInvType::Text -> Bool
-isInvType T.empty = False
 isInvType t
-    | (T.head t) == '_' = T.tail t == "type"
+    | (T.null t) = False
+    | (T.head t) == '_' = T.tail t == (T.pack "type")
     | otherwise = isInvType (T.tail t) 
 
-getTypeInv:: [Invariant] -> [Invariant]
-getTypeInv = foldr (\(Invariant l p) (acc1, acc2) -> if isInvType l then (Invariant l p) <> acc1 else (Invariant l p) <> acc2) ([], []) 
+getTypeInv:: [Invariant] -> ([Invariant], [Invariant])
+getTypeInv = foldr (\(Invariant l p) (acc1, acc2) -> if isInvType l then ((Invariant l p):acc1, acc2) else (acc1, (Invariant l p):acc2)) ([], [])

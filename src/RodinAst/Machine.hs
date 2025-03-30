@@ -5,6 +5,7 @@ module RodinAst.Machine where
 import Text.XML.HaXml.XmlContent
 import Text.XML.HaXml.Util
 import Data.Maybe
+import Data.Text (Text, unpack, pack)
 import Text.XML.HaXml.Types
 
 data MachineInfo = MachineInfo {
@@ -20,7 +21,7 @@ newtype SeesContext = SeesContext
     {target::Text}
 
 data Variable = Variable {name::Text} 
-data Invariant = Invariant {labelInv::Text,predicateInv::Text} 
+data Invariant = Invariant {labelInv::Text,predicateInv::Text} deriving(Show)
 data Variant = Variant {labelVar :: Text , expr :: Text} 
 data Event = Event {convergent :: Bool,labelEvent :: Text,parameter :: [Parameter],gards ::[Garde],action:: [Action]} 
 data Garde = Garde {labelGarde :: Text ,predicateGarde :: Text} deriving (Show)
@@ -81,7 +82,7 @@ instance XmlContent SeesContext where
             parseTarget target = return $ pack $ fromMaybe "unknow" $ attrToText "org.eventb.core.target" $ attrs target
 
     toContents v@(SeesContext target) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.target" $ target] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.target" $ toText $ show target] ]
 
 instance XmlContent Garde where 
     parseContents = do 
@@ -92,7 +93,7 @@ instance XmlContent Garde where
             parsePredicat p = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
 
     toContents v@(Garde l p) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ l, mkElemC "org.eventb.core.predicate" $ p] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ toText $ show l, mkElemC "org.eventb.core.predicate" $ toText $ show p] ]
 
 instance XmlContent Action where 
     parseContents = do 
@@ -102,7 +103,7 @@ instance XmlContent Action where
             parseAssignment ass = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.assignment" $ attrs ass
         
     toContents v@(Action ass) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ ass] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.assignment" $ toText $ show ass] ]
 
 instance XmlContent Parameter where 
     parseContents = do 
@@ -111,7 +112,7 @@ instance XmlContent Parameter where
         where  
             parseIdentifier i = return $ pack $ fromMaybe "unknow" $ attrToText "org.eventb.core.identifier" $ attrs i 
     toContents v@(Parameter i) = 
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.identifier" $ i] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.identifier" $ toText $ show i] ]
 
 instance XmlContent Event where
     parseContents = do
@@ -125,7 +126,7 @@ instance XmlContent Event where
             parseLabel l = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.label" $ attrs l
 
     toContents v@(Event c l p n a)=
-        [mkElemC (showConstr 0 $ toHType v) ([mkElemC "org.eventb.core.convergence" $ toText $ show c, mkElemC "org.eventb.core.label" $ l ] ++ (concatMap toContents p)++ (concatMap toContents n) ++ (concatMap toContents a))  ]
+        [mkElemC (showConstr 0 $ toHType v) ([mkElemC "org.eventb.core.convergence" $ toText $ show c, mkElemC "org.eventb.core.label" $ toText $ show l ] ++ (concatMap toContents p)++ (concatMap toContents n) ++ (concatMap toContents a))  ]
 
 instance XmlContent Variant where
     parseContents = do
@@ -136,7 +137,7 @@ instance XmlContent Variant where
             parsePredicat p = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
 
     toContents v@(Variant l p) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ l, mkElemC "org.eventb.core.predicate" $ p] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ toText $ show l, mkElemC "org.eventb.core.predicate" $ toText $ show p] ]
 
 instance XmlContent Invariant where
     parseContents = do
@@ -147,7 +148,7 @@ instance XmlContent Invariant where
             parsePredicat p = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.predicate" $ attrs p
 
     toContents v@(Invariant l p) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ l, mkElemC "org.eventb.core.predicate" $ p] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "org.eventb.core.label" $ toText $ show l, mkElemC "org.eventb.core.predicate" $ toText $ show p] ]
         --[mkAttrElemC (showConstr 0 $ toHType v) [mkAttr "name" n, mkAttr "org.eventb.core.label" l, mkAttr "org.eventb.core.predicate" p]]
 
 instance XmlContent Variable where
@@ -158,7 +159,7 @@ instance XmlContent Variable where
             parseName e = return $ pack $ fromMaybe  "unknow" $ attrToText "org.eventb.core.identifier" $ attrs e
 
     toContents v@(Variable n) =
-        [mkElemC (showConstr 0 $ toHType v) [mkElemC "name" $ n] ]
+        [mkElemC (showConstr 0 $ toHType v) [mkElemC "name" $ toText $ show n] ]
 
 instance XmlContent MachineInfo where
     
