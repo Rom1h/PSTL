@@ -29,8 +29,10 @@ library
       LeanMachineAst.ContextLeanProgram
       LeanMachineAst.ContextToLean
       LeanMachineAst.DataExpr
+      LeanMachineAst.MachineLeanAst
       LeanMachineAst.MachineToLean
       RodinAst.Context
+      RodinAst.ContextRodinAst
       RodinAst.Machine
   other-modules:
       Paths_PSTL
