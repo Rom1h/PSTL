@@ -1,6 +1,6 @@
 module LeanMachineAst.MachineLeanAst where
 import LeanMachineAst.DataExpr
-import RodinAst.Machine (MachineInfo(..), SeesContext(..), Variable(..), Invariant(..), Variant(..), Event(..), Garde(..), Parameter(..), Action(..))
+import RodinAst.MachineRodinAst (MachineInfo(..), SeesContext(..), Variable(..), Invariant(..), Variant(..), Event(..), Garde(..), Parameter(..), Action(..))
 import qualified Data.Text as T
 import Data.Text (Text)
 
@@ -55,12 +55,12 @@ data ActionAst = ActionAst{
 }deriving (Show)
 
 generateMachineAst:: MachineInfo -> MachineAst
-generateMachineAst (MachineInfo is scs vars invs varis events) = 
+generateMachineAst (MachineInfo is scs vars invs varis _ events) = 
     let (res1, res2) = getTypeInv invs in 
         MachineAst (T.pack "Bounded") (generateInitialisationAst is) (generateMachineConstAst scs) (generateVariableAst vars res1) (generateInvariantAst res2) (generateVariantAst varis) (generateEventAst events)
 
 generateInitialisationAst::[Event] -> InitialisationAst
-generateInitialisationAst ((Event c l p g ((Action ass):as)):es) = InitAst (T.pack "Initialisation") (textToExpr ass)
+generateInitialisationAst ((Event c l p g ((Action ass):as) _):es) = InitAst (T.pack "Initialisation") (textToExpr ass)
 
 generateVariantAst:: [Variant] -> [VariantAst]
 generateVariantAst [] = []
@@ -78,7 +78,7 @@ generateInvariantAst ((Invariant l p):invs) = (InvariantAst l (textToExpr p)):(g
 
 generateEventAst::[Event] -> [EventAst]
 generateEventAst [] = []
-generateEventAst ((Event _ _ _ g a):evs) = ((EventAst (generateGardeAst g) (generateActionAst a)):(generateEventAst evs))
+generateEventAst ((Event _ _ _ g a _):evs) = ((EventAst (generateGardeAst g) (generateActionAst a)):(generateEventAst evs))
 
 generateGardeAst::[Garde] -> [GardeAst]
 generateGardeAst [] = []

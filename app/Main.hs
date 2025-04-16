@@ -3,17 +3,18 @@ module Main (main) where
 
 import RodinAst.ContextRodinAst (ContextFile, Constant, Axiom)
 import LeanMachineAst.ContextToLean
-import LeanMachineAst.MachineToLean
-import RodinAst.Machine (MachineInfo, SeesContext, Variable, Invariant, Variant, Event, Garde, Action, Parameter)
+import LeanMachineAst.MachineToLean as MTL
+import RodinAst.MachineRodinAst (MachineInfo, SeesContext, Variable, Invariant, Variant, Event, Garde, Action, Parameter)
 import Text.XML.HaXml.XmlContent
 import Text.XML.HaXml.Parse
 import Text.XML.HaXml.Types
-import RodinAst.ContextRodinAst 
+import RodinAst.ContextRodinAst as CRA
+import RodinAst.MachineRodinAst as MRA
 import qualified Data.Map as Map
 
 
 import LeanMachineAst.ContextLeanAst
-import LeanMachineAst.MachineLeanAst
+import LeanMachineAst.MachineLeanAst as MLA
 import LeanMachineAst.ContextLeanProgram
 import Text.XML.HaXml.Types (Content(..), Element(..), QName(..), Attribute,AttValue(..))
 
@@ -53,7 +54,16 @@ main = do
     let doc = xmlParse "testContext.xml" xmlContent
         Document _ _ rootElem _ = doc
         Elem _ _ children = rootElem
-        balisesMap = generateBalise children Map.empty
+        balisesMap = CRA.generateBalise children Map.empty
         contextAst = generateContextRodinAst balisesMap
+    xmlMachine <- readFile "./xmlFile/Machine/fichierNormal.xml"
+    let doc2 = xmlParse "fichierNormal.xml" xmlMachine
+        Document _ _ rootElem2 _ = doc2 
+        Elem _ _ children2 = rootElem2
+        baliseMap2 = MRA.generateBalise children2 Map.empty
+        machineAst = MRA.generateMachineRodinAst baliseMap2
 
     TIO.writeFile"./leanFile/Context/context.lean" (parseContextAst (generateContextAst contextAst))
+    TIO.writeFile"./leanFile/Machine/machine.lean" (T.pack (show (MLA.generateMachineAst machineAst)))
+
+    

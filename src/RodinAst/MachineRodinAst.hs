@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module RodinAst.ContextRodinAst where
+module RodinAst.MachineRodinAst where
 
 import qualified Data.Text as T
 import qualified Data.Map as Map
@@ -13,24 +13,31 @@ data MachineInfo = MachineInfo {
     variables ::[Variable],
     invariants :: [Invariant],
     variants::[Variant],
+    refines::[Refines],
     events::[Event]
     } 
 
-newtype SeesContext = SeesContext
-    {target::Text}
+newtype Refines = Refines {targetref::T.Text}
 
-data Variable = Variable {name::Text} 
-data Invariant = Invariant {labelInv::Text,predicateInv::Text} deriving(Show)
-data Variant = Variant {labelVar :: Text , expr :: Text} 
-data Event = Event {convergent :: Bool,labelEvent :: Text,parameter :: [Parameter],gards ::[Garde],action:: [Action]} 
-data Garde = Garde {labelGarde :: Text ,predicateGarde :: Text} deriving (Show)
+newtype SeesContext = SeesContext
+    {target::T.Text}
+
+data Variable = Variable {name::T.Text} 
+data Invariant = Invariant {labelInv::T.Text,predicateInv::T.Text} 
+data Variant = Variant {labelVar :: T.Text , expr :: T.Text} 
+data Event = Event {convergent :: Bool,labelEvent :: T.Text,parameter :: [Parameter],gards ::[Garde],action:: [Action], refinesEv::[RefinesEvent]} 
+data Garde = Garde {labelGarde :: T.Text ,predicateGarde :: T.Text} deriving Show
+
+newtype RefinesEvent = RefinesEvent
+    {targetRefEv::T.Text}
+    deriving Show
 
 newtype Parameter = Parameter 
-    {identificateur :: Text}
+    {identificateur :: T.Text}
     deriving Show
 
 data Action = Action 
-    {assign :: Text}
+    {assign :: T.Text}
     deriving Show
 
 -- Génération d'une map de balises par nom: permet de stocker tout les balises de meme nom dans une liste.
@@ -55,83 +62,107 @@ getValue n ((N aName, val):xs)
     | aName == n = attValueToText val
     | otherwise  = getValue n xs
 
--- Générer les constantes depuis les balises
-generateConstant :: [Content i ] -> [Constant]
-generateConstant cons =
-    map (\(CElem (Elem _ atts _) _) -> Constant (getValue "org.eventb.core.identifier" atts)) cons
-
--- Générer les axiomes depuis les balises
-generateAxiom :: [Content i] -> [Axiom]
-generateAxiom axioms =
-    map (\(CElem (Elem _ atts _) _) ->
-            Axiom (getValue "org.eventb.core.label" atts)
-                   (getValue "org.eventb.core.predicate" atts)
-        ) axioms
-
-
 generateAction :: [Content i] -> [Action]
 generateAction action = 
     map(\(CElem (Elem _ atts _) _) -> 
             Action (getValue "org.eventb.core.assignment" atts) {- Pas besoin de stocker le label -}
         ) action
 
+generateRefinesEvent :: [Content i] -> [RefinesEvent]
+generateRefinesEvent refinesEv = 
+    map(\(CElem (Elem _ atts _) _) -> 
+            RefinesEvent (getValue "org.eventb.core.target" atts)
+        ) refinesEv
+
 generateParameter::[Content i] -> [Parameter]
 generateParameter param = 
     map(\(CElem (Elem _ atts _) _) -> 
-            Parameter (getValue "org.eventb.core.identifier")
+            Parameter (getValue "org.eventb.core.identifier" atts)
         ) param
 
 generateGarde::[Content i] -> [Garde]
 generateGarde gard =
     map(\(CElem (Elem _ atts _) _) -> 
-            Garde (getValue "org.eventb.core.label") (getValue "org.event.core.predicate")
+            Garde (getValue "org.eventb.core.label" atts) (getValue "org.event.core.predicate" atts)
         ) gard
 
 generateVariant::[Content i] -> [Variant]
 generateVariant variant = 
     map(\(CElem (Elem _ atts _) _) -> 
-            Variant (getValue "org.eventb.core.label") (getValue "org.eventb.core.expression")
+            Variant (getValue "org.eventb.core.label" atts) (getValue "org.eventb.core.expression" atts)
         ) variant
 
 generateInvariant::[Content i] -> [Invariant]
 generateInvariant invariant = 
     map(\(CElem (Elem _ atts _) _) -> 
-            Invariant (getValue "org.eventb.core.label") (getValue "org.eventb.core.predicate")
+            Invariant (getValue "org.eventb.core.label" atts) (getValue "org.eventb.core.predicate" atts)
         ) invariant
 
 generateVariable::[Content i] -> [Variable]
 generateVariable variable = 
     map(\(CElem (Elem _ atts _) _) -> 
-            Variable (getValue "org.eventb.core.identifier")
+            Variable (getValue "org.eventb.core.identifier" atts)
         ) variable
 
 generateSeesContext::[Content i] -> [SeesContext]
 generateSeesContext sc =
     map(\(CElem (Elem _ atts _) _) -> 
-            SeesContext (getValue "org.eventb.core.target")
+            SeesContext (getValue "org.eventb.core.target" atts)
         ) sc
 
-textToBoolean::Text -> Bool
+textToBoolean::T.Text -> Bool
 textToBoolean t 
-    | t == (toText "1") = True
-    | t == (toText "0") = False
+    | t == (T.pack "1") = True
+    | t == (T.pack "0") = False
     | otherwise = False
 
 generateEvent::[Content i] -> [Event]
 generateEvent event = 
-    map(\(CElem (Elem (_ atts sl) _)) -> 
-            let 
-                actionBalise = Map.findWithDefault [] "org.eventb.core.action" sl
-                guardeBalise = Map.findWithDefault [] "org.eventb.core.guard" sl
-                parameterBalise = Map.findWithDefault [] "org.eventb.core.parameter" sl
-            in Event (textToBoolean $ getValue "org.eventb.core.convergent") (getValue "org.eventb.core.label") (generateParameter parameterBalise) (generateGarde guardeBalise) (generateAction actionBalise)
-        ) event
+    foldr (\(CElem (Elem _ atts sl) _) acc -> 
+        if (((getValue "org.eventb.core.label" atts) /= (T.pack "INITIALISATION")) )
+           then 
+                let m = generateBalise sl Map.empty in 
+                let 
+                    actionBalise = Map.findWithDefault [] "org.eventb.core.action" m
+                    guardeBalise = Map.findWithDefault [] "org.eventb.core.guard" m
+                    parameterBalise = Map.findWithDefault [] "org.eventb.core.parameter" m
+                    refinesBalise = Map.findWithDefault [] "org.eventb.core.refinesEvent" m
+                    in (Event (textToBoolean $ getValue "org.eventb.core.convergent" atts) (getValue "org.eventb.core.label" atts) (generateParameter parameterBalise) (generateGarde guardeBalise) (generateAction actionBalise) (generateRefinesEvent refinesBalise)):acc
+            else
+                acc
+        ) [] event
 
-generateMachineRodinAst :: Map.Map String [Content i] -> ContextFile {- A finir faire que l'initialisation soit récupérer dans les event et mettre les autres event a part-}
+generateInitialisation:: [Content i] -> [Event]
+generateInitialisation event = 
+    foldr (\(CElem (Elem _ atts sl) _) acc -> 
+        if (((getValue "org.eventb.core.label" atts) == (T.pack "INITIALISATION")) )
+           then 
+                let m = generateBalise sl Map.empty in 
+                let 
+                    actionBalise = Map.findWithDefault [] "org.eventb.core.action" m
+                    guardeBalise = Map.findWithDefault [] "org.eventb.core.guard" m
+                    parameterBalise = Map.findWithDefault [] "org.eventb.core.parameter" m
+                    refinesBalise = Map.findWithDefault [] "org.eventb.core.refinesEvent" m
+                    in (Event (textToBoolean $ getValue "org.eventb.core.convergent" atts) (getValue "org.eventb.core.label" atts) (generateParameter parameterBalise) (generateGarde guardeBalise) (generateAction actionBalise) (generateRefinesEvent refinesBalise)):acc
+
+            else
+                acc
+        ) [] event
+
+generateRefines:: [Content i] -> [Refines]
+generateRefines refines =
+    map(\(CElem (Elem _ atts _) _) -> 
+            Refines (getValue "org.eventb.core.target" atts)
+        ) refines
+
+
+
+generateMachineRodinAst :: Map.Map String [Content i] -> MachineInfo {- A finir faire que l'initialisation soit récupérer dans les event et mettre les autres event a part-}
 generateMachineRodinAst m =
     let seesContextBalise = Map.findWithDefault [] "org.eventb.core.seesContext" m
         invariantBalise    = Map.findWithDefault [] "org.eventb.core.invariant" m
         variantBalise    = Map.findWithDefault [] "org.eventb.core.variant" m
         eventBalise    = Map.findWithDefault [] "org.eventb.core.event" m
         variableBalise    = Map.findWithDefault [] "org.eventb.core.variable" m
-    in MachineInfo (generate constantsBalise) (generateAxiom axiomsBalise)
+        refinesBalise = Map.findWithDefault [] "org.eventb.core.refinesMachine" m
+    in MachineInfo (generateInitialisation eventBalise) (generateSeesContext seesContextBalise) (generateVariable variableBalise) (generateInvariant invariantBalise) (generateVariant variantBalise) (generateRefines refinesBalise) (generateEvent eventBalise)

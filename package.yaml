@@ -24,6 +24,7 @@ dependencies:
 - HaXml >=1.25
 - text
 - hspec
+- containers >= 0.6.8
 
 ghc-options:
 - -Wall
