@@ -57,5 +57,14 @@ dataExprTest = do
     it "(ml_tl=green ∧ a+b+1<d) ∨ (ml_tl=green ∧ a+b+1=d) ∨ (il_tl=green ∧ b>1) ∨ (il_tl=green ∧ b=1) ∨ (ml_tl=red ∧ a+b<d ∧ c=0 ∧ il_pass=1) ∨ (il_tl=red ∧ 0<b ∧ a=0 ∧ ml_pass=1) " $ do
       textToExpr "(ml_tl=green ∧ a+b+1<d) ∨\n(ml_tl=green ∧ a+b+1=d) ∨ \n(il_tl=green ∧ b>1) ∨\n(il_tl=green ∧ b=1) ∨ \n(ml_tl=red ∧ a+b<d ∧ c=0 ∧ il_pass=1) ∨\n(il_tl=red ∧ 0<b ∧ a=0 ∧ ml_pass=1) ∨\n0<a ∨\n0<c"
         `shouldBe`  Inf (Eq (Cons "a") (Cons "1")) (Cons "3")
+
+
+    it "maxCount ∈ ℕ" $ do
+      textToExpr "maxCount ∈ ℕ"
+        `shouldBe`  In (Cons "maxCount") Nat
+    
+    it "count ≔ 0" $ do
+      textToExpr "count &lt; maxCount"
+        `shouldBe`  In (Cons "maxCount") Nat 
     
         

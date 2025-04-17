@@ -19,6 +19,8 @@ data Expr
     | Add Expr Expr    -- expr1 + expr2
     | Sub Expr Expr    -- expr1 - expr2
     | Mul Expr Expr
+    | In Expr CType -- expr ∈ ℕ
+    | Aff Expr Expr
     | Cons Text        -- Constante/Variable
     
     deriving (Show, Eq)
@@ -36,7 +38,7 @@ xmlSymbolToOp =
 tokenize :: Text -> [Text]
 tokenize txt
   | T.null txt = []
-  | T.head txt `elem` ("()+-*=<∧∨≠≥≤⇒>" :: String) =
+  | T.head txt `elem` ("()+-*=≔<∧∨≠≥≤⇒>∈" :: String) =
       T.singleton (T.head txt) : tokenize (T.tail txt)
   | T.head txt == ' ' =
       tokenize (T.tail txt)
@@ -82,7 +84,12 @@ parseCompOperator tokens =
     ("<" : xs) -> let (e2, rest2) = parseCompOperator xs in (Inf e1 e2, rest2)
     ("≤" : xs) -> let (e2, rest2) = parseCompOperator xs in (InfEq e1 e2, rest2)
     ("=" : xs) -> let (e2, rest2) = parseCompOperator xs in (Eq e1 e2, rest2)
+    ("≔" : xs) -> let (e2, rest2) = parseCompOperator xs in (Aff e1 e2, rest2)
     ("≠" : xs) -> let (e2, rest2) = parseCompOperator xs in (NotEq e1 e2, rest2)
+    ("∈" : xs) -> 
+            case xs of
+                (x:rest2) -> (In e1 (matchCType x), rest2)
+                _ -> error "Expected a type after ∈"
     _->(e1,rest)
 
 parseNumOperator :: [Text] -> (Expr, [Text])
@@ -141,6 +148,9 @@ exprToText (And e1 e2) = exprToText e1 <> "∧" <> exprToText e2
 exprToText (Add e1 e2) = exprToText e1 <> "+" <> exprToText e2
 exprToText (Sub e1 e2) = exprToText e1 <> "-" <> exprToText e2
 exprToText (Mul e1 e2) = exprToText e1 <> "*" <> exprToText e2
+exprToText (In e t) = exprToText e <> "∈" <> cTypeToText t
+exprToText (Aff e1 e2) = exprToText e1 <> "≔" <> exprToText e2
+
 exprToText (Cons e) = e
 
 textToType :: Text -> CType

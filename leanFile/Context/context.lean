@@ -7,4 +7,6 @@ import LeanMachines.NonDet.Ordinary
 structure BoundedCtx where
 structure Name where
 maxCount : Nat
-type_maxCount : maxCount 
+type_maxCount : maxCount ∈ ℕ
+maxCount_prop : maxCount>0
+maxCount_type : maxCount∈ℕ

@@ -83,7 +83,7 @@ generateParameter param =
 generateGarde::[Content i] -> [Garde]
 generateGarde gard =
     map(\(CElem (Elem _ atts _) _) -> 
-            Garde (getValue "org.eventb.core.label" atts) (getValue "org.event.core.predicate" atts)
+            Garde (getValue "org.eventb.core.label" atts) (getValue "org.eventb.core.predicate" atts)
         ) gard
 
 generateVariant::[Content i] -> [Variant]
