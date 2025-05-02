@@ -1,13 +1,13 @@
 -- MACHINE 
-structure:  m0/-SEES-/ (ctx:cd) where
-	n:ℕ
+structure  m0/-SEES-/ (ctx:cd) where
+	n:Nat
 
 namespace m0
 
 
 @[simp]
 def inv1 (m : m0 ctx) : Prop :=
-	m.n∈ℕ
+	m.n∈Nat
 @[simp]
 def inv2 (m : m0 ctx) : Prop :=
 	m.n≤m.d

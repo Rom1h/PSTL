@@ -4,24 +4,21 @@ import LeanMachines.Event.Convergent
 import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
-structure BoundedCtx where
-structure Name where
-maxCount : Nat
-type_maxCount : maxCount ∈ ℕ
-maxCount_prop : maxCount>0
-maxCount_type : maxCount∈ℕ
+structure testContext where
+	maxCount : Nat
+	prop_maxCount : maxCount>0
 
 
 -- MACHINE 
-structure:  m0/-SEES-/ (ctx:cd) where
-	n:ℕ
+structure  m0/-SEES-/ (ctx:cd) where
+	n:Nat
 
 namespace m0
 
 
 @[simp]
 def inv1 (m : m0 ctx) : Prop :=
-	m.n∈ℕ
+	m.n∈Nat
 @[simp]
 def inv2 (m : m0 ctx) : Prop :=
 	m.n≤m.d

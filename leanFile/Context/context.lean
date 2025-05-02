@@ -4,9 +4,6 @@ import LeanMachines.Event.Convergent
 import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
-structure BoundedCtx where
-structure Name where
-maxCount : Nat
-type_maxCount : maxCount ∈ ℕ
-maxCount_prop : maxCount>0
-maxCount_type : maxCount∈ℕ
+structure testContext where
+	maxCount : Nat
+	prop_maxCount : maxCount>0

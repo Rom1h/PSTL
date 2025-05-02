@@ -13,8 +13,8 @@ data AxiomL = AxiomL {axiomName :: Text, axiom :: Expr} deriving (Show)
 
 --Name à modifier (trouver comment le récuperer)
 generateContextAst :: ContextFile -> ContextAst
-generateContextAst (ContextFile cons ax) = 
-    ContextAst (T.pack "Name") (generateConstantsAst cons ax)  (generateAxiomAst ax)
+generateContextAst (ContextFile ctxName cons ax) = 
+    ContextAst ctxName (generateConstantsAst cons ax)  (generateAxiomAst ax)
 
 --getConstType récupere le type (type_cons) de la constante dans la liste des Axiom et convertie le type String en CType.
 generateConstantsAst :: [Constant]->[Axiom]->[ConstantL]

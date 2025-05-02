@@ -8,6 +8,7 @@ import Text.XML.HaXml.Types
 import Data.Maybe (fromMaybe)
 
 data ContextFile = ContextFile {
+    ctxName :: T.Text,
     constants :: [Constant],
     axioms :: [Axiom]
 } deriving (Show)
@@ -54,8 +55,8 @@ generateAxiom axioms =
                    (getValue "org.eventb.core.predicate" atts)
         ) axioms
 
-generateContextRodinAst :: Map.Map String [Content i] -> ContextFile
-generateContextRodinAst m =
+generateContextRodinAst ::T.Text-> Map.Map String [Content i] -> ContextFile
+generateContextRodinAst ctxName m =
     let constantsBalise = Map.findWithDefault [] "org.eventb.core.constant" m
         axiomsBalise    = Map.findWithDefault [] "org.eventb.core.axiom" m
-    in ContextFile (generateConstant constantsBalise) (generateAxiom axiomsBalise)
+    in ContextFile ctxName (generateConstant constantsBalise) (generateAxiom axiomsBalise)

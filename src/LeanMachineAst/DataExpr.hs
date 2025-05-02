@@ -167,6 +167,6 @@ matchCType t
 
 cTypeToText :: CType-> Text
 cTypeToText cT
-    | cT == Nat = T.pack "ℕ"
+    | cT == Nat = T.pack "Nat"
     | otherwise = T.pack "None"
 

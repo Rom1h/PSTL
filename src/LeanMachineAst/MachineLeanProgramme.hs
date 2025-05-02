@@ -16,7 +16,7 @@ parseMachineAst ctx@(CLA.ContextAst ctxName consL axs) m@(MLA.MachineAst mName m
     
     let ctxConsName = map (\(CLA.ConstantL consName _ )-> consName) consL in
     "-- MACHINE \n"<>
-    "structure:  " <> mName <>
+    "structure  " <> mName <>
     pack "/-SEES-/ (ctx:" <> (toTextContType mContext) <>
     pack ") where" <> 
     (parseVariables variable)<>
