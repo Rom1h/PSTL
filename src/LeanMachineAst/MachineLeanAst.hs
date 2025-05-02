@@ -13,7 +13,7 @@ data MachineAst = MachineAst{
     invariants::[InvariantAst],
     variant:: [VariantAst],
     events::[EventAst]
-    } deriving (Show)
+    } 
 
 data MachineContAst = MachineContAst{
     contName::Text,
@@ -36,11 +36,11 @@ data InvariantAst = InvariantAst{
 }deriving (Show)
 
 data InitialisationAst = InitAst{
-    initialisationName::Text,
-    initialisationInit::Expr
+    initialisationEvent::EventAst
 }deriving (Show)
 
 data EventAst = EventAst{
+    eventName :: Text,
     eventGard :: [GardeAst],
     eventAction :: [ActionAst]
 }deriving (Show)
@@ -54,13 +54,13 @@ data ActionAst = ActionAst{
     actionExpr:: Expr
 }deriving (Show)
 
-generateMachineAst:: MachineInfo -> MachineAst
-generateMachineAst (MachineInfo is scs vars invs varis _ events) = 
+generateMachineAst:: Text->MachineInfo -> MachineAst
+generateMachineAst mName (MachineInfo is scs vars invs varis _ events) = 
     let (res1, res2) = getTypeInv invs in 
-        MachineAst (T.pack "Bounded") (generateInitialisationAst is) (generateMachineConstAst scs) (generateVariableAst vars res1) (generateInvariantAst res2) (generateVariantAst varis) (generateEventAst events)
+        MachineAst  mName (generateInitialisationAst is) (generateMachineConstAst scs) (generateVariableAst vars res1) (generateInvariantAst res2) (generateVariantAst varis) (generateEventAst events)
 
 generateInitialisationAst::[Event] -> InitialisationAst
-generateInitialisationAst ((Event c l p g ((Action ass):as) _):es) = InitAst (T.pack "Initialisation") (textToExpr ass)
+generateInitialisationAst [Event c l p g a _ ] = InitAst (EventAst l (generateGardeAst g) (generateActionAst a))
 
 generateVariantAst:: [Variant] -> [VariantAst]
 generateVariantAst [] = []
@@ -78,7 +78,7 @@ generateInvariantAst ((Invariant l p):invs) = (InvariantAst l (textToExpr p)):(g
 
 generateEventAst::[Event] -> [EventAst]
 generateEventAst [] = []
-generateEventAst ((Event _ _ _ g a _):evs) = ((EventAst (generateGardeAst g) (generateActionAst a)):(generateEventAst evs))
+generateEventAst ((Event _ l _ g a _):evs) = ((EventAst l (generateGardeAst g) (generateActionAst a)):(generateEventAst evs))
 
 generateGardeAst::[Garde] -> [GardeAst]
 generateGardeAst [] = []
@@ -90,9 +90,11 @@ generateActionAst [] = []
 generateActionAst ((Action ass):gs) = ((ActionAst (textToExpr ass)):(generateActionAst gs))
 
 getType::Text -> [Invariant] -> CType
+getType _ [] = Nat
 getType varName ((Invariant l p):invs) 
     | (varName /= T.empty) && (T.isInfixOf varName l) = textToType (Prelude.last (T.splitOn (T.pack "∈") p))
     | otherwise = (getType varName invs)
+
 
 isInvType::Text -> Bool
 isInvType t

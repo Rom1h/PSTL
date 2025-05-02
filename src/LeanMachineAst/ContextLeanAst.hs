@@ -28,6 +28,7 @@ removeTypeAxiom [] = []
 removeTypeAxiom ((Axiom l p) : xs)= 
   if getFlag l == T.pack "type" then removeTypeAxiom xs
   else (Axiom l p):removeTypeAxiom xs
+  
 getConsType :: Text -> [Axiom] -> CType
 getConsType t [] = Nat
 getConsType t (Axiom l p : xs) =

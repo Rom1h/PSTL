@@ -10,12 +10,14 @@ import Text.XML.HaXml.Parse
 import Text.XML.HaXml.Types
 import RodinAst.ContextRodinAst as CRA
 import RodinAst.MachineRodinAst as MRA
+
 import qualified Data.Map as Map
 
 
 import LeanMachineAst.ContextLeanAst
 import LeanMachineAst.MachineLeanAst as MLA
 import LeanMachineAst.ContextLeanProgram
+import LeanMachineAst.MachineLeanProgramme
 import Text.XML.HaXml.Types (Content(..), Element(..), QName(..), Attribute,AttValue(..))
 
 import qualified Data.Text as T
@@ -47,7 +49,27 @@ main = do
 
 -}
 
+import Data.List (isSuffixOf)
 
+getBaseName :: FilePath -> String
+getBaseName path =
+  let nameWithExt = last (splitOn '/' path)
+      name = takeWhile (/= '.') nameWithExt
+  in name
+
+splitOn :: Eq a => a -> [a] -> [[a]]
+splitOn _ [] = [[]]
+splitOn sep (x:xs)
+  | x == sep  = [] : rest
+  | otherwise = (x : head rest) : tail rest
+  where rest = splitOn sep xs
+
+{-
+main = do
+  let path = "./xmlFile/Machine/m0.xml"
+  let name = getBaseName path  -- "m0"
+  putStrLn name -}
+  
 main :: IO ()
 main = do
     xmlContent <- readFile "./xmlFile/Context/testContext.xml"
@@ -56,14 +78,26 @@ main = do
         Elem _ _ children = rootElem
         balisesMap = CRA.generateBalise children Map.empty
         contextAst = generateContextRodinAst balisesMap
-    xmlMachine <- readFile "./xmlFile/Machine/fichierNormal.xml"
+    let machinePath ="./xmlFile/Machine/m0.xml"
+        machineName = getBaseName machinePath
+    xmlMachine <- readFile machinePath
     let doc2 = xmlParse "fichierNormal.xml" xmlMachine
         Document _ _ rootElem2 _ = doc2 
         Elem _ _ children2 = rootElem2
         baliseMap2 = MRA.generateBalise children2 Map.empty
         machineAst = MRA.generateMachineRodinAst baliseMap2
+        contextLeanAST = generateContextAst contextAst
+        tContext = parseContextAst contextLeanAST
+        tMachine = parseMachineAst contextLeanAST (MLA.generateMachineAst (T.pack machineName) machineAst)
+    
+    TIO.writeFile "./leanFile/Context/context.lean" tContext
+    TIO.writeFile "./leanFile/Machine/machine.lean" tMachine
+    TIO.writeFile "./leanFile/Program/programme.lean" (generateProgramm tContext tMachine)
 
-    TIO.writeFile"./leanFile/Context/context.lean" (parseContextAst (generateContextAst contextAst))
-    TIO.writeFile"./leanFile/Machine/machine.lean" (T.pack (show (MLA.generateMachineAst machineAst)))
+generateProgramm :: T.Text-> T.Text -> T.Text
+generateProgramm tContext tMachine = 
+    tContext <>
+    T.pack "\n\n"<>
+    tMachine
 
     

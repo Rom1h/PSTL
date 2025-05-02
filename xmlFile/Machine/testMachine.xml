@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+    <org.eventb.core.event name="'" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="INITIALISATION">
+        <org.eventb.core.action name="'" org.eventb.core.assignment="count≔0" org.eventb.core.label="act1"/>
+    </org.eventb.core.event>
     <org.eventb.core.seesContext name="(" org.eventb.core.target="BoundedCtx"/>
-    <org.eventb.core.invariant name="*" org.eventb.core.label="count_type" org.eventb.core.predicate="count e N"/>
-    <org.eventb.core.invariant name="+" org.eventb.core.label="count_bounded" org.eventb.core.predicate="count <= max_count"/>
+    <org.eventb.core.variable name=")" org.eventb.core.identifier="count"/>
+    <org.eventb.core.invariant name="*" org.eventb.core.label="count_type" org.eventb.core.predicate="count ∈ ℕ"/>
+    <org.eventb.core.invariant name="+" org.eventb.core.label="count_bounded" org.eventb.core.predicate="count≤maxCount"/>
+    <org.eventb.core.variant name="," org.eventb.core.expression="count" org.eventb.core.label="vrn2"/>
+    <org.eventb.core.event name="-" org.eventb.core.convergence="1" org.eventb.core.extended="false" org.eventb.core.label="Incr">
+        <org.eventb.core.guard name="'" org.eventb.core.label="grd" org.eventb.core.predicate="count&lt;maxCount"/>
+        <org.eventb.core.action name="(" org.eventb.core.assignment="count≔count+1" org.eventb.core.label="act"/>
+    </org.eventb.core.event>
+    <org.eventb.core.event name="." org.eventb.core.convergence="1" org.eventb.core.extended="false" org.eventb.core.label="Decr">
+        <org.eventb.core.guard name="'" org.eventb.core.label="grd" org.eventb.core.predicate="count&gt;0"/>
+        <org.eventb.core.action name="(" org.eventb.core.assignment="count≔count−1" org.eventb.core.label="act"/>
+    </org.eventb.core.event>
+    <org.eventb.core.event name="/" org.eventb.core.convergence="0" org.eventb.core.extended="false" org.eventb.core.label="Discard">
+        <org.eventb.core.parameter name="'" org.eventb.core.identifier="k"/>
+        <org.eventb.core.guard name="(" org.eventb.core.label="grd1" org.eventb.core.predicate="count&gt;0"/>
+        <org.eventb.core.guard name=")" org.eventb.core.label="grd2" org.eventb.core.predicate="k≤count"/>
+        <org.eventb.core.guard name="*" org.eventb.core.label="grd3" org.eventb.core.predicate="k∈ ℕ"/>
+        <org.eventb.core.action name="+" org.eventb.core.assignment="count ≔ count−k" org.eventb.core.label="eff"/>
+    </org.eventb.core.event>
 </org.eventb.core.machineFile>
-

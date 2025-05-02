@@ -38,7 +38,7 @@ xmlSymbolToOp =
 tokenize :: Text -> [Text]
 tokenize txt
   | T.null txt = []
-  | T.head txt `elem` ("()+-*=≔<∧∨≠≥≤⇒>∈" :: String) =
+  | T.head txt `elem` ("()+−*=≔<∧∨≠≥≤⇒>∈" :: String) =
       T.singleton (T.head txt) : tokenize (T.tail txt)
   | T.head txt == ' ' =
       tokenize (T.tail txt)
@@ -97,7 +97,7 @@ parseNumOperator tokens =
   let (e1, rest) = parseVar tokens
   in case rest of
     ("+" : xs) -> let (e2, rest2) = parseNumOperator xs in (Add e1 e2, rest2)
-    ("-" : xs) -> let (e2, rest2) = parseNumOperator xs in (Sub e1 e2, rest2)
+    ("−" : xs) -> let (e2, rest2) = parseNumOperator xs in (Sub e1 e2, rest2)
     ("*" : xs) -> let (e2, rest2) = parseNumOperator xs in (Mul e1 e2, rest2)
     _->(e1,rest)
 
@@ -146,7 +146,7 @@ exprToText (Impliq e1 e2) = exprToText e1 <> "⇒" <> exprToText e2
 exprToText (Or e1 e2) = exprToText e1 <> "∨" <> exprToText e2
 exprToText (And e1 e2) = exprToText e1 <> "∧" <> exprToText e2
 exprToText (Add e1 e2) = exprToText e1 <> "+" <> exprToText e2
-exprToText (Sub e1 e2) = exprToText e1 <> "-" <> exprToText e2
+exprToText (Sub e1 e2) = exprToText e1 <> "−" <> exprToText e2
 exprToText (Mul e1 e2) = exprToText e1 <> "*" <> exprToText e2
 exprToText (In e t) = exprToText e <> "∈" <> cTypeToText t
 exprToText (Aff e1 e2) = exprToText e1 <> "≔" <> exprToText e2
