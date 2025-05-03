@@ -73,6 +73,7 @@ test-suite PSTL-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      CompilationTest
       DataExprSpec
       Paths_PSTL
   autogen-modules:

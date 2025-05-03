@@ -4,11 +4,11 @@ import LeanMachines.Event.Convergent
 import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
-structure SENSOR where
-	off : Nat
-	on : Nat
-	axm2 : ¬on=off
-	axm1 : Sensor={on,off}
+structure COLOR where
+	red : Nat
+	green : Nat
+	axm3 : green≠red
+	axm4 : Color={green,red}
 
 
 -- MACHINE 
@@ -52,7 +52,7 @@ def Default : m1ctx :=
 	b := default
 	a := default}
 
-instance: Machine SENSOR (m1 ctx) where
+instance: Machine COLOR (m1 ctx) where
   context := ctx
   invariant m := thm2 ∧ thm1 ∧ inv5 ∧ inv4 ∧ inv3 ∧ inv2 ∧ inv1
   variant m := 

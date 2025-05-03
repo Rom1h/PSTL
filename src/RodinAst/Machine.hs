@@ -23,7 +23,7 @@ newtype SeesContext = SeesContext
 data Variable = Variable {name::Text} 
 data Invariant = Invariant {labelInv::Text,predicateInv::Text} 
 data Variant = Variant {labelVar :: Text , expr :: Text} 
-data Event = Event {convergent :: Bool,labelEvent :: Text,parameter :: [Parameter],gards ::[Garde],action:: [Action]} 
+data Event = Event {convergent :: Bool,labelEvent :: Text,parameter :: [Parameter],gards ::[Garde],action:: [Action]} deriving Show 
 data Garde = Garde {labelGarde :: Text ,predicateGarde :: Text} deriving (Show)
 
 newtype Parameter = Parameter 

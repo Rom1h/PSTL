@@ -21,24 +21,25 @@ newtype Refines = Refines {targetref::T.Text}
 
 newtype SeesContext = SeesContext
     {target::T.Text}
+    deriving Eq
 
-data Variable = Variable {name::T.Text} 
-data Invariant = Invariant {labelInv::T.Text,predicateInv::T.Text} 
-data Variant = Variant {labelVar :: T.Text , expr :: T.Text} 
-data Event = Event {convergent :: Bool,labelEvent :: T.Text,parameter :: [Parameter],gards ::[Garde],action:: [Action], refinesEv::[RefinesEvent]} 
-data Garde = Garde {labelGarde :: T.Text ,predicateGarde :: T.Text} deriving Show
+data Variable = Variable {name::T.Text} deriving (Show, Eq)
+data Invariant = Invariant {labelInv::T.Text,predicateInv::T.Text} deriving Eq
+data Variant = Variant {labelVar :: T.Text , expr :: T.Text} deriving (Show, Eq)
+data Event = Event {convergent :: Bool,labelEvent :: T.Text,parameter :: [Parameter],gards ::[Garde],action:: [Action], refinesEv::[RefinesEvent]} deriving (Eq)
+data Garde = Garde {labelGarde :: T.Text ,predicateGarde :: T.Text} deriving (Show, Eq)
 
 newtype RefinesEvent = RefinesEvent
     {targetRefEv::T.Text}
-    deriving Show
+    deriving (Show, Eq)
 
 newtype Parameter = Parameter 
     {identificateur :: T.Text}
-    deriving Show
+    deriving (Show, Eq)
 
 data Action = Action 
     {assign :: T.Text}
-    deriving Show
+    deriving (Show, Eq)
 
 -- Génération d'une map de balises par nom: permet de stocker tout les balises de meme nom dans une liste.
 generateBalise :: [Content i] -> Map.Map String [Content i] -> Map.Map String [Content i]

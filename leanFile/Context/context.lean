@@ -4,8 +4,8 @@ import LeanMachines.Event.Convergent
 import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
-structure SENSOR where
-	off : Nat
-	on : Nat
-	axm2 : ¬on=off
-	axm1 : Sensor={on,off}
+structure COLOR where
+	red : Nat
+	green : Nat
+	axm3 : green≠red
+	axm4 : Color={green,red}

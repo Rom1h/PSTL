@@ -52,14 +52,17 @@ instance Show SeesContext where
     show (SeesContext t) = show t
 
 showGarde :: ([Garde],String) -> String
+showGarde ([], s) = ""
 showGarde ([(Garde l p)], s) = "def " <>s<>".guard_"<> show l <>" (m : Bounded ctx) : Prop := \n\t m."<> showPredicate (show p) <> "\n\n"
 showGarde (((Garde l p):gs), s) =  "def " <>s<>".guard_"<> show l <>" (m : Bounded ctx) : Prop := \n\t m."<> showPredicate (show p) <> "\n\n"<> showGarde (gs, s)
 
 showGardeEvent :: [Garde] -> String -> String -- Trouver un meilleur nom si possible
+showGardeEvent [] s = ""
 showGardeEvent [(Garde l _)] s = s<>".guard_"<>show l<>" m"
 showGardeEvent ((Garde l _):gs) s = s<>".guard_"<>show l<>" m^"<> showGardeEvent gs s
 
 showActionEvent :: [Action] -> String -> String -- Trouver un meilleur nom si possible
+showActionEvent [] s = ""
 showActionEvent [(Action l)] s = s<>".action_"<>show l<>" m"
 showActionEvent ((Action l):as) s = s<>".action_"<>show l<>" m^"<> showActionEvent as s
 

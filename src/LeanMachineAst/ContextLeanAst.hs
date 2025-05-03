@@ -6,9 +6,9 @@ import Data.Text (Text)
 
 
 -- Changer nom data ConstantL / AxiomL 
-data ContextAst = ContextAst {contextName ::Text ,constants :: [ConstantL],axioms::[AxiomL]} deriving (Show)
-data ConstantL = ConstantL {constantName :: Text , constantType :: CType} deriving (Show)
-data AxiomL = AxiomL {axiomName :: Text, axiom :: Expr} deriving (Show)
+data ContextAst = ContextAst {contextName ::Text ,constants :: [ConstantL],axioms::[AxiomL]} deriving (Show, Eq)
+data ConstantL = ConstantL {constantName :: Text , constantType :: CType} deriving (Show, Eq)
+data AxiomL = AxiomL {axiomName :: Text, axiom :: Expr} deriving (Show, Eq)
 
 
 --Name à modifier (trouver comment le récuperer)
