@@ -4,6 +4,8 @@ import LeanMachines.Event.Convergent
 import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
-structure testContext where
-	maxCount : Nat
-	prop_maxCount : maxCount>0
+structure SENSOR where
+	off : Nat
+	on : Nat
+	axm2 : ¬on=off
+	axm1 : Sensor={on,off}

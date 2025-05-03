@@ -72,7 +72,7 @@ main = do
   
 main :: IO ()
 main = do
-    let ctxPath ="./xmlFile/Context/testContext.xml"
+    let ctxPath ="./xmlFile/Context/SENSOR.buc"
         ctxName = getBaseName ctxPath
     xmlContent <- readFile ctxPath
     let doc = xmlParse "testContext.xml" xmlContent
@@ -80,7 +80,7 @@ main = do
         Elem _ _ children = rootElem
         balisesMap = CRA.generateBalise children Map.empty
         contextAst = generateContextRodinAst (T.pack ctxName) balisesMap
-    let machinePath ="./xmlFile/Machine/m0.xml"
+    let machinePath ="./xmlFile/Machine/m1.xml"
         machineName = getBaseName machinePath
     xmlMachine <- readFile machinePath
     let doc2 = xmlParse "fichierNormal.xml" xmlMachine

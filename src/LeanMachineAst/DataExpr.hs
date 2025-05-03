@@ -21,6 +21,8 @@ data Expr
     | Mul Expr Expr
     | In Expr CType -- expr ∈ ℕ
     | Aff Expr Expr
+    | Ens [Expr]
+    | Not Expr
     | Cons Text        -- Constante/Variable
     
     deriving (Show, Eq)
@@ -38,7 +40,7 @@ xmlSymbolToOp =
 tokenize :: Text -> [Text]
 tokenize txt
   | T.null txt = []
-  | T.head txt `elem` ("()+−*=≔<∧∨≠≥≤⇒>∈" :: String) =
+  | T.head txt `elem` ("()¬+−*=≔<∧∨≠≥≤⇒>∈{}," :: String) =
       T.singleton (T.head txt) : tokenize (T.tail txt)
   | T.head txt == ' ' =
       tokenize (T.tail txt)
@@ -68,9 +70,14 @@ parseOrOperator tokens =
         ("∨" : xs) -> let (e2, rest2) = parseOrOperator xs in (Or e1 e2, rest2)
         _ ->(e1,rest)
 
+parseNot :: [Text] -> (Expr, [Text])
+parseNot ("¬" : xs) =
+    let (e1, rest) = parseNot xs
+    in (Not e1, rest)
+parseNot tokens = parseCompOperator tokens
 parseAndOperator :: [Text] -> (Expr, [Text])
 parseAndOperator tokens =
-    let (e1,rest) = parseCompOperator tokens
+    let (e1, rest) = parseNot tokens
     in case rest of
         ("∧" : xs) -> let (e2, rest2) = parseAndOperator xs in (And e1 e2, rest2)
         _->(e1,rest)
@@ -102,6 +109,9 @@ parseNumOperator tokens =
     _->(e1,rest)
 
 parseVar :: [Text] -> (Expr,[Text])
+parseVar ("{":xs) =
+    let (elements, rest) = parseSet xs
+    in (Ens elements, rest)
 parseVar ("(":xs) =
     let (e , rest) = parseImplic xs
     in case rest of
@@ -111,6 +121,17 @@ parseVar (x : xs)
     | T.all (\c ->isAlphaNum c || c=='_') x = (Cons x, xs)
     | otherwise = error "Unexepted token"
 
+
+parseSet :: [Text] -> ([Expr], [Text])
+parseSet ("}":xs) = ([], xs)  
+parseSet tokens =
+    let (e1, rest1) = parseImplic tokens
+    in case rest1 of
+        ("," : rest2) ->
+            let (es, rest3) = parseSet rest2
+            in (e1 : es, rest3)
+        ("}" : rest2) -> ([e1], rest2)
+        _ -> error "Expected ',' or '}' in set"
 
 {-
 textToExpr :: Text -> Expr
@@ -150,6 +171,10 @@ exprToText (Sub e1 e2) = exprToText e1 <> "−" <> exprToText e2
 exprToText (Mul e1 e2) = exprToText e1 <> "*" <> exprToText e2
 exprToText (In e t) = exprToText e <> "∈" <> cTypeToText t
 exprToText (Aff e1 e2) = exprToText e1 <> "≔" <> exprToText e2
+exprToText (Ens e) = "{" <> T.intercalate "," (map exprToText e) <> "}"
+exprToText (Not e) = "¬" <> exprToText e
+
+
 
 exprToText (Cons e) = e
 

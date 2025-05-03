@@ -28,7 +28,7 @@ parseMachineAst ctx@(CLA.ContextAst ctxName consL axs) m@(MLA.MachineAst mName m
     pack "\n"<>
     parseDefault mName variable <>
     pack "\n\n"<>
-    (generateInstanceMachine m)<>
+    (generateInstanceMachine ctxName m)<>
     pack "\n\n"<>
 
     parseMachineInit mInit mName <>
@@ -38,9 +38,9 @@ parseMachineAst ctx@(CLA.ContextAst ctxName consL axs) m@(MLA.MachineAst mName m
 
 
 
-generateInstanceMachine :: MLA.MachineAst -> Text
-generateInstanceMachine (MLA.MachineAst mName _ mContext _ invariants variants _) =
-    pack "instance: Machine " <> mName <> " (" <> mName <> " ctx) where\n"
+generateInstanceMachine :: Text -> MLA.MachineAst -> Text
+generateInstanceMachine  ctxName (MLA.MachineAst mName _ mContext _ invariants variants _) =
+    pack "instance: Machine " <> ctxName <> " (" <> mName <> " ctx) where\n"
     <> pack "  context := ctx\n"
     <> (if not (null invariants)
         then pack "  invariant m := " <> intercalate " ∧ " (map (\(MLA.InvariantAst name _) -> name) invariants) <> pack "\n"

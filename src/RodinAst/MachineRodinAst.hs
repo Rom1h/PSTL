@@ -54,6 +54,8 @@ attValueToText (AttValue parts) = T.concat $ map extract parts
   where
     extract (Left str) = T.pack str
     extract (Right (RefEntity ref)) = T.pack ("&" ++ ref ++ ";") -- Pour récuperer les symbole &gt; etc..
+    extract (Right _) = "" 
+
 
 -- Fonction pour extraire la valeur d'un attribut donné
 getValue :: String -> [Attribute] -> T.Text
