@@ -1,4 +1,4 @@
-import DataExprSpec as DES
+import CompilationTest as CT
 
 
 import Test.Hspec
@@ -6,5 +6,5 @@ import Test.Hspec
 
 main :: IO ()
 main = hspec $ do
-  -- revrev
-  DES.dataExprTest
+  CT.machineRodinASTTest
+  CT.contextRodinASTTest

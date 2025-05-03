@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+    <org.eventb.core.invariant name="+" org.eventb.core.label="count_bounded" org.eventb.core.predicate="count ≤ maxCount"/>
+</org.eventb.core.machineFile>

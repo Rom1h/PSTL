@@ -7,13 +7,13 @@ namespace m0
 
 @[simp]
 def inv1 (m : m0 ctx) : Prop :=
-	m.n∈Nat
+	m.nÔêêÔäò
 @[simp]
 def inv2 (m : m0 ctx) : Prop :=
-	m.n≤m.d
+	m.nÔëñd
 @[simp]
 def thm1 (m : m0 ctx) : Prop :=
-	m.n>0∨m.n<m.d
+	m.n>0
 
 @[simp]
 def Default : m0ctx :=
@@ -28,7 +28,7 @@ instance: Machine m0 (m0 ctx) where
 def Initialisation : InitEvent (m0 ctx) Unit Unit :=
 	newInitEvent'' {
 		 init _ :={
-			n≔0 }
+			nÔëö0 }
 		safety _ := by sorry 
 	}
 
@@ -42,7 +42,7 @@ def ML_out.grd1 (m : m0 ctx) : Prop :=
 @[simp]
 def ML_out.action (m : m0 ctx) : m0 ctx :=
 	{
-	m.n≔m.n+1}
+	m.nÔëön+1}
 
 def ML_out: OrdinaryEvent (m0 ctx) Unit Unit :=
 	newEvent'' {
@@ -59,7 +59,7 @@ def ML_in.grd1 (m : m0 ctx) : Prop :=
 @[simp]
 def ML_in.action (m : m0 ctx) : m0 ctx :=
 	{
-	m.n≔m.n−1}
+	m.nÔëönÔêÆ1}
 
 def ML_in: OrdinaryEvent (m0 ctx) Unit Unit :=
 	newEvent'' {

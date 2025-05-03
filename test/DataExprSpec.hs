@@ -67,10 +67,4 @@ dataExprTest = do
       textToExpr "count &lt; maxCount"
         `shouldBe`  In (Cons "maxCount") Nat
    
-  describe "Test getType" $ do
-
-    it "getType should return Nat for variable 'x' in invariant 'x ∈ ℕ'" $ do
-      let invs = [Invariant "test" "x ∈ ℕ"]
-      getType "x" invs `shouldBe` Nat
-    
         

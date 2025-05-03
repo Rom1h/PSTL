@@ -18,41 +18,41 @@ data MachineAst = MachineAst{
 data MachineContAst = MachineContAst{
     contName::Text,
     contType::Text
-}deriving (Show)
+}deriving (Show, Eq)
 
 data VariantAst = VariantAst{
     variantName::Text,
     variantExpr::Expr
-}deriving (Show)
+}deriving (Show, Eq)
 
 data VariableAst = VariableAst{
     variableName::Text,
     variableType::CType
-}deriving (Show)
+}deriving (Show, Eq)
 
 data InvariantAst = InvariantAst{
     invariantName::Text,
     invariantProp::Expr
-}deriving (Show)
+}deriving (Show, Eq)
 
 data InitialisationAst = InitAst{
     initialisationEvent::EventAst
-}deriving (Show)
+}deriving (Show, Eq)
 
 data EventAst = EventAst{
     eventName :: Text,
     eventGard :: [GardeAst],
     eventAction :: [ActionAst]
-}deriving (Show)
+}deriving (Show, Eq)
 
 data GardeAst = GardeAst{
     guardeName::Text,
     guardeProp:: Expr
-}deriving (Show)
+}deriving (Show, Eq)
 
 data ActionAst = ActionAst{
     actionExpr:: Expr
-}deriving (Show)
+}deriving (Show, Eq)
 
 generateMachineAst:: Text->MachineInfo -> MachineAst
 generateMachineAst mName (MachineInfo is scs vars invs varis _ events) = 

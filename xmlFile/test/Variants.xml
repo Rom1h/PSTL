@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<org.eventb.core.machineFile org.eventb.core.configuration="org.eventb.core.fwd" version="5">
+    <org.eventb.core.variant name="," org.eventb.core.expression="count ≔ count − 1" org.eventb.core.label="vrn2"/>
+</org.eventb.core.machineFile>

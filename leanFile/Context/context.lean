@@ -5,5 +5,5 @@ import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
 structure testContext where
-	maxCount : Nat
+	maxCount : None
 	prop_maxCount : maxCount>0
