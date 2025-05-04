@@ -26,32 +26,6 @@ import Text.XML.HaXml.Types (Content(..), Element(..), QName(..), Attribute,AttV
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 
---main :: IO ()
---main = do
-  --  stds <- fReadXml "example.xml"::IO Students
-  --  let std = stds::Students in 
-  --      do print ( toStrings std )
-{-
-main :: IO ()
-main = do
-    xmlContent <-  readFile "./xmlFile/Context/testContext.xml"
-    let doc = (xmlParse "test.txt" xmlContent))
-
-
-    stds <- fReadXml "./xmlFile/Machine/fichierNormal.xml"::IO MachineInfo
-    let std = stds::MachineInfo in
-        do writeFile "./leanFile/Machine/machine.lean" (show (generateMachineAst std))
-
-    fWriteXml "./xmlFile/Machine/testMachine-out.xml" stds
-    stds2 <- fReadXml "./xmlFile/Context/testContextPredicat.xml"::IO ContextFile
-    let std2 = stds2::ContextFile in
-        do  TIO.writeFile"./leanFile/Context/context.lean" (parseContextAst (generateContextAst std2))
-    fWriteXml "./xmlFile/Context/testContext-out.xml" stds2
-    writeFile "./leanFile/Context/test.lean" "(ml_tl=green ∧ a+b+1&lt;d) ∨ &#10;(ml_tl=green ∧ a+b+1=d) ∨&#10;(il_tl=green ∧ b&gt;1) ∨ &#10;(il_tl=green ∧ b=1) ∨&#10;(ml_tl=red ∧ a+b&lt;d ∧ c=0 ∧ il_pass=1) ∨ &#10;(il_tl=red ∧ 0&lt;b ∧ a=0 ∧ ml_pass=1) ∨&#10;0&lt;a ∨&#10;0&lt;c"
-
-
--}
-
 import Data.List (isSuffixOf)
 
 getBaseName :: FilePath -> String
@@ -67,12 +41,6 @@ splitOn sep (x:xs)
   | otherwise = (x : head rest) : tail rest
   where rest = splitOn sep xs
 
-
-{-main = do
-  let path = "./xmlFile/Machine/m0.xml"
-  let name = getBaseName path  -- "m0"
-  putStrLn name 
--}
 main :: IO ()
 main = do
     args <- getArgs
@@ -80,18 +48,18 @@ main = do
     if (taille > 2) || (taille < 2) then 
         putStrLn "Veillez mettre en premier le fichier contexte puis le fichier machine"
     else do
-        let ctxPath = args !! 0 -- mettre head args  à la place testContext.xml
+        let ctxPath = args !! 0
             ctxName = getBaseName ctxPath
         xmlContent <- readFile ctxPath
-        let doc = xmlParse "Erreur dans le parsing du context" xmlContent  -- pareil
+        let doc = xmlParse "Erreur dans le parsing du context" xmlContent 
             Document _ _ rootElem _ = doc
             Elem _ _ children = rootElem
             balisesMap = CRA.generateBalise children Map.empty
             contextAst = generateContextRodinAst (T.pack ctxName) balisesMap
-        let machinePath =args !! 1 -- mettre args !! 2  à la place de m0.xml
+        let machinePath =args !! 1 
             machineName = getBaseName machinePath
         xmlMachine <- readFile machinePath
-        let doc2 = xmlParse "Erreur dans le parsing de la machine" xmlMachine -- pareil
+        let doc2 = xmlParse "Erreur dans le parsing de la machine" xmlMachine 
             Document _ _ rootElem2 _ = doc2 
             Elem _ _ children2 = rootElem2
             baliseMap2 = MRA.generateBalise children2 Map.empty
