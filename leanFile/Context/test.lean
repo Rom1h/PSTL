@@ -1,0 +1,1 @@
+(ml_tl=green ∧ a+b+1&lt;d) ∨ &#10;(ml_tl=green ∧ a+b+1=d) ∨&#10;(il_tl=green ∧ b&gt;1) ∨ &#10;(il_tl=green ∧ b=1) ∨&#10;(ml_tl=red ∧ a+b&lt;d ∧ c=0 ∧ il_pass=1) ∨ &#10;(il_tl=red ∧ 0&lt;b ∧ a=0 ∧ ml_pass=1) ∨&#10;0&lt;a ∨&#10;0&lt;c

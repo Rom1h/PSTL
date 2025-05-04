@@ -4,12 +4,8 @@ import LeanMachines.Event.Convergent
 import LeanMachines.NonDet.Ordinary
 
 -- CONTEXT
-structure BoundedCtx where
--- CONSTANTS
-maxCount: Nat
-type_maxCount : maxCount ∈ ℕ
-
--- AXIOMS
-prop_maxCount : maxCount > 0
-
-
+structure COLOR where
+	red : Nat
+	green : Nat
+	axm3 : green≠red
+	axm4 : Color={green,red}

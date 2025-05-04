@@ -1,8 +1,15 @@
 <?xml version='1.0' ?>
 <ContextFile>
   <Constant org.eventb.core.identifier="maxCount"/>
-  <Axiom org.eventb.core.label="maxCount_type"
+  <Axiom org.eventb.core.label="type_maxCount"
          org.eventb.core.predicate="maxCount ∈ ℕ"/>
-  <Axiom org.eventb.core.label="maxCount_prop"
-         org.eventb.core.predicate="maxCount > 0"/>
+  <Axiom org.eventb.core.label="prop_maxCount"
+         org.eventb.core.predicate="(ml_tl=green ∧ a+b+1<d) ∨ 
+(ml_tl=green ∧ a+b+1=d) ∨
+(il_tl=green ∧ b>1) ∨ 
+(il_tl=green ∧ b=1) ∨
+(ml_tl=red ∧ a+b<d ∧ c=0 ∧ il_pass=1) ∨ 
+(il_tl=red ∧ 0<b ∧ a=0 ∧ ml_pass=1) ∨
+0<a ∨
+0<c"/>
 </ContextFile>

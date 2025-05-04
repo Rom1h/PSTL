@@ -1,14 +1,76 @@
 <?xml version='1.0' ?>
 <MachineInfo>
+  <Event>
+    <org.eventb.core.convergence>False</org.eventb.core.convergence>
+    <org.eventb.core.label>"INITIALISATION"</org.eventb.core.label>
+    <Action>
+      <org.eventb.core.assignment>"count \212\235\246 0"</org.eventb.core.assignment>
+    </Action>
+  </Event>
   <SeesContext>
-    <org.eventb.core.target>BoundedCtx</org.eventb.core.target>
+    <org.eventb.core.target>"BoundedCtx"</org.eventb.core.target>
   </SeesContext>
+  <Variable>
+    <name>"count"</name>
+  </Variable>
   <Invariant>
-    <org.eventb.core.label>count_type</org.eventb.core.label>
-    <org.eventb.core.predicate>count e N</org.eventb.core.predicate>
+    <org.eventb.core.label>"count_type"</org.eventb.core.label>
+    <org.eventb.core.predicate>"count \212\234\234 \212\228\242"</org.eventb.core.predicate>
   </Invariant>
   <Invariant>
-    <org.eventb.core.label>count_bounded</org.eventb.core.label>
-    <org.eventb.core.predicate>count <= max_count</org.eventb.core.predicate>
+    <org.eventb.core.label>"count_bounded"</org.eventb.core.label>
+    <org.eventb.core.predicate>"count \212\235\241 maxCount"</org.eventb.core.predicate>
   </Invariant>
+  <Variant>
+    <org.eventb.core.label>"vrn2"</org.eventb.core.label>
+    <org.eventb.core.predicate>"unknow"</org.eventb.core.predicate>
+  </Variant>
+  <Event>
+    <org.eventb.core.convergence>True</org.eventb.core.convergence>
+    <org.eventb.core.label>"Incr"</org.eventb.core.label>
+    <Garde>
+      <org.eventb.core.label>"grd"</org.eventb.core.label>
+      <org.eventb.core.predicate>"count < maxCount"</org.eventb.core.predicate>
+    </Garde>
+    <Action>
+      <org.eventb.core.assignment>"count \212\235\246 count + 1"</org.eventb.core.assignment>
+    </Action>
+  </Event>
+  <Event>
+    <org.eventb.core.convergence>True</org.eventb.core.convergence>
+    <org.eventb.core.label>"Decr"</org.eventb.core.label>
+    <Garde>
+      <org.eventb.core.label>"grd"</org.eventb.core.label>
+      <org.eventb.core.predicate>"count > 0"</org.eventb.core.predicate>
+    </Garde>
+    <Action>
+      <org.eventb.core.assignment>"count \212\235\246 count \212\234\198 1"</org.eventb.core.assignment>
+    </Action>
+  </Event>
+  <Event>
+    <org.eventb.core.convergence>False</org.eventb.core.convergence>
+    <org.eventb.core.label>"Discard"</org.eventb.core.label>
+    <Parameter>
+      <org.eventb.core.identifier>"k"</org.eventb.core.identifier>
+    </Parameter>
+    <Garde>
+      <org.eventb.core.label>"grd1"</org.eventb.core.label>
+      <org.eventb.core.predicate>"count > 0"</org.eventb.core.predicate>
+    </Garde>
+    <Garde>
+      <org.eventb.core.label>"grd2"</org.eventb.core.label>
+      <org.eventb.core.predicate>"k \212\235\241 count"</org.eventb.core.predicate>
+    </Garde>
+    <Garde>
+      <org.eventb.core.label>"grd3"</org.eventb.core.label>
+      <org.eventb.core.predicate>" k > 0"</org.eventb.core.predicate>
+    </Garde>
+    <Garde>
+      <org.eventb.core.label>"grd_type"</org.eventb.core.label>
+      <org.eventb.core.predicate>"k \212\234\234 \212\228\242"</org.eventb.core.predicate>
+    </Garde>
+    <Action>
+      <org.eventb.core.assignment>"count \212\235\246 count \212\234\198 k"</org.eventb.core.assignment>
+    </Action>
+  </Event>
 </MachineInfo>
