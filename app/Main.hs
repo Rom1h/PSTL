@@ -83,7 +83,7 @@ main = do
         let ctxPath = args !! 0 -- mettre head args  à la place testContext.xml
             ctxName = getBaseName ctxPath
         xmlContent <- readFile ctxPath
-        let doc = xmlParse "testContext.xml" xmlContent  -- pareil
+        let doc = xmlParse "Erreur dans le parsing du context" xmlContent  -- pareil
             Document _ _ rootElem _ = doc
             Elem _ _ children = rootElem
             balisesMap = CRA.generateBalise children Map.empty
@@ -91,7 +91,7 @@ main = do
         let machinePath =args !! 1 -- mettre args !! 2  à la place de m0.xml
             machineName = getBaseName machinePath
         xmlMachine <- readFile machinePath
-        let doc2 = xmlParse "fichierNormal.xml" xmlMachine -- pareil
+        let doc2 = xmlParse "Erreur dans le parsing de la machine" xmlMachine -- pareil
             Document _ _ rootElem2 _ = doc2 
             Elem _ _ children2 = rootElem2
             baliseMap2 = MRA.generateBalise children2 Map.empty
