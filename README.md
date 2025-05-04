@@ -26,6 +26,10 @@ Exemple d'une commande avec les noms de fichier
 stack exec PSTL-exe ./xmlFile/Machine/testContext.xml ./xmlFile/Machine/m0.xml
 ```
 
+Après avoir exécuté ces commandes, vous pourrez consulter les résultats dans le dossier LeanFile, où se trouvent notre contexte, notre machine, ainsi que le programme complet généré.
+
+# Test 
+
 Pour lancer les tests, il vous suffit d’exécuter la commande suivante :
 
 ```
