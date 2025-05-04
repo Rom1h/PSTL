@@ -8,6 +8,7 @@ import qualified Data.Text as T
 import RodinAst.MachineRodinAst as MRA 
 import LeanMachineAst.MachineLeanAst as MLA
 import LeanMachineAst.MachineToLean
+import LeanMachineAst.ContextToLean
 import RodinAst.ContextRodinAst as CRA 
 import LeanMachineAst.ContextLeanAst as CLA
 import LeanMachineAst.ContextToLean

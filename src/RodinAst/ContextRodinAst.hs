@@ -11,14 +11,14 @@ data ContextFile = ContextFile {
     ctxName :: T.Text,
     constants :: [Constant],
     axioms :: [Axiom]
-} deriving (Show, Eq)
+} deriving (Eq)
 
-newtype Constant = Constant { identifierConst :: T.Text }deriving (Show, Eq)
+newtype Constant = Constant { identifierConst :: T.Text }deriving (Eq)
 
 data Axiom = Axiom {
     labelAx :: T.Text,
     predicateAx :: T.Text 
-}deriving (Show, Eq)
+}deriving (Eq)
 
 -- Génération d'une map de balises par nom: permet de stocker tout les balises de meme nom dans une liste.
 generateBalise :: [Content i] -> Map.Map String [Content i] -> Map.Map String [Content i]

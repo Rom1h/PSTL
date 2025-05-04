@@ -2,7 +2,7 @@
 
 module LeanMachineAst.ContextToLean where
 
-import RodinAst.Context (ContextFile(..), Constant(..), Axiom(..))
+import RodinAst.ContextRodinAst (ContextFile(..), Constant(..), Axiom(..))
 import Data.Text (Text, unpack,pack)
 
 -- Récupère la partie après le premier underscore
@@ -35,7 +35,7 @@ showProp (Constant ident) (Axiom l p : xs) =
         else showProp (Constant ident) xs
 
 instance Show ContextFile where
-    show (ContextFile c a) =
+    show (ContextFile _ c a) =
         "import LeanMachines.Event.Basic\n" ++
         "import LeanMachines.Event.Ordinary\n" ++
         "import LeanMachines.Event.Convergent\n" ++

@@ -32,9 +32,7 @@ library
       LeanMachineAst.MachineLeanAst
       LeanMachineAst.MachineLeanProgramme
       LeanMachineAst.MachineToLean
-      RodinAst.Context
       RodinAst.ContextRodinAst
-      RodinAst.Machine
       RodinAst.MachineRodinAst
   other-modules:
       Paths_PSTL
